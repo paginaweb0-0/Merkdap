@@ -3,106 +3,193 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MercadosApp — Busca precios</title>
+  <title>MercadosApp — Busca y compara precios</title>
   <style>
+    /* ─── RESET Y VARIABLES ─── */
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: #f8faf8; color: #1a2e1a; min-height: 100vh; }
+    :root {
+      --primary: #0b5e2e;
+      --primary-light: #15803d;
+      --primary-dark: #064e1b;
+      --primary-bg: #f0fdf4;
+      --accent: #ca8a04;
+      --accent-hover: #a16207;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+      --shadow: 0 4px 24px rgba(0,0,0,0.06);
+      --shadow-hover: 0 8px 32px rgba(0,0,0,0.10);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --transition: 0.25s ease;
+    }
+    body { font-family: 'Inter', -apple-system, system-ui, sans-serif; background: var(--gray-50); color: var(--gray-900); min-height: 100vh; }
 
-    nav { background: #166534; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-    nav .logo { color: white; font-size: 20px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 8px; }
-    nav .nav-links a { color: #bbf7d0; text-decoration: none; font-size: 14px; margin-left: 16px; }
-    nav .nav-links a:hover { color: white; }
-    nav .nav-links .btn-panel { background: #2563eb; color: white; border: none; padding: 6px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s; text-decoration: none; display: inline-block; }
-    nav .nav-links .btn-panel:hover { background: #1d4ed8; }
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--gray-100); }
+    ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--gray-500); }
 
-    .hero { background: linear-gradient(135deg, #15803d, #166534); padding: 50px 24px; text-align: center; color: white; }
-    .hero h1 { font-size: 28px; margin-bottom: 8px; }
+    /* ─── NAV ─── */
+    nav { background: var(--primary-dark); padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+    nav .logo { color: white; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; letter-spacing: -0.3px; }
+    nav .logo span { background: var(--accent); font-size: 12px; padding: 2px 10px; border-radius: 20px; font-weight: 600; color: white; margin-left: 4px; }
+    nav .nav-links { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    nav .nav-links a { color: #bbf7d0; text-decoration: none; font-size: 14px; cursor: pointer; padding: 6px 12px; border-radius: 8px; transition: var(--transition); }
+    nav .nav-links a:hover { background: rgba(255,255,255,0.1); color: white; }
+    nav .nav-links .btn-panel { background: var(--accent); color: white; border: none; padding: 8px 18px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition); text-decoration: none; display: inline-block; }
+    nav .nav-links .btn-panel:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
+    /* ─── HERO ─── */
+    .hero { background: linear-gradient(145deg, var(--primary-dark), var(--primary)); padding: 48px 24px 40px; text-align: center; color: white; position: relative; overflow: hidden; }
+    .hero::before { content: '🛒'; position: absolute; right: -20px; top: -30px; font-size: 180px; opacity: 0.06; transform: rotate(15deg); pointer-events: none; }
+    .hero h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .hero h1 span { color: #fcd34d; }
     .hero p { font-size: 15px; color: #bbf7d0; margin-bottom: 24px; }
-    .search-bar { display: flex; gap: 8px; max-width: 540px; margin: 0 auto; }
-    .search-bar input { flex: 1; padding: 12px 16px; border-radius: 10px; border: none; font-size: 15px; outline: none; }
-    .search-bar button { background: #ca8a04; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-    .search-bar button:hover { background: #a16207; }
+    .search-bar { display: flex; gap: 10px; max-width: 560px; margin: 0 auto; }
+    .search-bar input { flex: 1; padding: 14px 20px; border-radius: var(--radius-sm); border: none; font-size: 15px; outline: none; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transition: var(--transition); }
+    .search-bar input:focus { box-shadow: 0 4px 28px rgba(0,0,0,0.18); transform: scale(1.01); }
+    .search-bar button { background: var(--accent); color: white; border: none; padding: 14px 32px; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 8px; }
+    .search-bar button:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(202,138,4,0.3); }
 
-    .filtros { background: white; border-bottom: 1px solid #e5e7eb; padding: 12px 24px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-    .filtros label { font-size: 13px; color: #6b7280; font-weight: 500; }
-    .filtros select { padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; background: white; cursor: pointer; }
+    /* ─── FILTROS ─── */
+    .filtros { background: white; border-bottom: 1px solid var(--gray-200); padding: 12px 24px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; position: sticky; top: 64px; z-index: 40; box-shadow: 0 1px 4px rgba(0,0,0,0.03); }
+    .filtros label { font-size: 12px; color: var(--gray-500); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .filtros select { padding: 8px 14px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm); font-size: 13px; background: white; cursor: pointer; transition: var(--transition); min-width: 140px; }
+    .filtros select:focus { border-color: var(--primary-light); outline: none; box-shadow: 0 0 0 3px rgba(21,128,61,0.1); }
 
-    .contenido { max-width: 1100px; margin: 0 auto; padding: 24px; }
-    .resultados-info { font-size: 14px; color: #6b7280; margin-bottom: 14px; }
-    .resultados-info strong { color: #166534; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+    /* ─── CONTENIDO ─── */
+    .contenido { max-width: 1200px; margin: 0 auto; padding: 24px; }
 
-    .tarjeta { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; transition: box-shadow 0.2s; }
-    .tarjeta:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-    .tarjeta-imagen { width: 100%; height: 110px; background: #f0fdf4; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 10px; overflow: hidden; }
-    .tarjeta h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-    .precio { font-size: 20px; font-weight: 700; color: #166534; margin: 6px 0 2px; }
-    .precio span { font-size: 12px; color: #9ca3af; font-weight: 400; }
-    .mercado-link { font-size: 12px; color: #166534; font-weight: 500; }
-    .fecha { font-size: 11px; color: #9ca3af; margin-top: 2px; }
-    .badge-oferta { display: inline-block; background: #fef9c3; color: #854d0e; font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 20px; margin-bottom: 4px; }
-    .vacio { text-align: center; padding: 50px 20px; color: #9ca3af; grid-column: 1/-1; }
-    .vacio .icono { font-size: 44px; margin-bottom: 10px; }
+    /* ─── CATEGORÍAS ─── */
+    .categoria-section { margin-bottom: 40px; }
+    .categoria-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--gray-200); }
+    .categoria-header .icono { font-size: 28px; }
+    .categoria-header h2 { font-size: 20px; font-weight: 700; color: var(--gray-900); }
+    .categoria-header .count { font-size: 13px; color: var(--gray-500); font-weight: 500; background: var(--gray-100); padding: 2px 12px; border-radius: 20px; }
 
-    footer { background: #1a2e1a; color: #9ca3af; text-align: center; padding: 20px; margin-top: 40px; font-size: 13px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; }
+
+    /* ─── TARJETA ─── */
+    .tarjeta { background: white; border-radius: var(--radius); border: 1px solid var(--gray-200); padding: 18px; transition: var(--transition); position: relative; }
+    .tarjeta:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: var(--primary-light); }
+    .tarjeta-imagen { width: 100%; height: 100px; background: var(--primary-bg); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 38px; margin-bottom: 10px; overflow: hidden; transition: var(--transition); }
+    .tarjeta:hover .tarjeta-imagen { transform: scale(1.02); }
+    .tarjeta h3 { font-size: 14px; font-weight: 600; margin-bottom: 2px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .precio { font-size: 20px; font-weight: 700; color: var(--primary-dark); margin: 6px 0 2px; }
+    .precio span { font-size: 12px; color: var(--gray-500); font-weight: 400; }
+    .mercado-link { font-size: 12px; color: var(--primary-light); font-weight: 500; display: flex; align-items: center; gap: 4px; }
+    .mercado-link::before { content: '📍'; font-size: 12px; }
+    .fecha { font-size: 11px; color: var(--gray-500); margin-top: 4px; }
+    .badge-oferta { display: inline-block; background: #fef9c3; color: #854d0e; font-size: 11px; font-weight: 600; padding: 2px 12px; border-radius: 20px; margin-bottom: 4px; }
+
+    /* ─── VACIO ─── */
+    .vacio { text-align: center; padding: 60px 20px; color: var(--gray-500); grid-column: 1/-1; }
+    .vacio .icono { font-size: 48px; margin-bottom: 12px; }
+    .vacio h3 { font-size: 18px; color: var(--gray-700); margin-bottom: 4px; }
+    .vacio p { font-size: 14px; }
+
+    /* ─── RESULTADOS INFO ─── */
+    .resultados-info { font-size: 14px; color: var(--gray-500); margin-bottom: 20px; padding: 12px 16px; background: white; border-radius: var(--radius-sm); border: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .resultados-info strong { color: var(--primary-dark); }
+    .resultados-info .badge-cantidad { background: var(--primary-bg); color: var(--primary-dark); padding: 2px 14px; border-radius: 20px; font-weight: 600; font-size: 13px; }
+
+    /* ─── FOOTER ─── */
+    footer { background: var(--primary-dark); color: #9ca3af; text-align: center; padding: 24px; margin-top: 20px; font-size: 13px; }
     footer strong { color: white; }
 
-    @media (max-width: 600px) {
-      .hero h1 { font-size: 22px; }
+    /* ─── TOAST ─── */
+    .toast { position: fixed; bottom: 30px; right: 30px; background: var(--primary-dark); color: white; padding: 14px 24px; border-radius: var(--radius-sm); font-size: 14px; z-index: 200; transform: translateY(100px); opacity: 0; transition: all 0.4s ease; max-width: 380px; box-shadow: var(--shadow-hover); }
+    .toast.visible { transform: translateY(0); opacity: 1; }
+    .toast.error { background: #dc2626; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { height: auto; padding: 12px 16px; flex-direction: column; gap: 8px; }
+      .hero h1 { font-size: 24px; }
       .search-bar { flex-direction: column; }
-      .grid { grid-template-columns: 1fr 1fr; }
+      .filtros { position: static; padding: 12px 16px; gap: 10px; }
+      .filtros select { min-width: 100px; flex: 1; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+      .resultados-info { flex-direction: column; text-align: center; }
     }
     @media (max-width: 400px) {
-      .grid { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr 1fr; }
+      .tarjeta { padding: 12px; }
+      .tarjeta-imagen { height: 70px; font-size: 28px; }
+      .precio { font-size: 16px; }
     }
   </style>
 </head>
 <body>
 
+<!-- ─── NAV ─── -->
 <nav>
-  <span class="logo">🛒 MercadosApp</span>
+  <span class="logo" onclick="location.reload()">🛒 MercadosApp <span>beta</span></span>
   <div class="nav-links">
-    <a href="#">Buscar precios</a>
-    <a href="panel.html" class="btn-panel">🔐 Soy mercader →</a>
+    <a href="#" onclick="location.reload()">🏠 Inicio</a>
+    <a href="panel.html" class="btn-panel">🔐 Panel mercader</a>
   </div>
 </nav>
 
+<!-- ─── HERO ─── -->
 <div class="hero">
-  <h1>Compara precios de tu mercado</h1>
-  <p>Consulta precios actualizados sin registrarte</p>
+  <h1>Encuentra los <span>mejores precios</span> 🛍️</h1>
+  <p>Compara productos de diferentes mercados en un solo lugar</p>
   <div class="search-bar">
-    <input type="text" id="busqueda" placeholder="¿Qué buscas? Ej: tomate, pollo, leche…" />
+    <input type="text" id="busqueda" placeholder="🔍 Buscar productos... Ej: tomate, pollo, leche" />
     <button onclick="buscar()">Buscar</button>
   </div>
 </div>
 
+<!-- ─── FILTROS ─── -->
 <div class="filtros">
-  <label>Mercado:</label>
+  <label>📍 Mercado</label>
   <select id="filtroMercado" onchange="buscar()">
     <option value="">Todos</option>
   </select>
 
-  <label>Categoría:</label>
+  <label>📂 Categoría</label>
   <select id="filtroCategoria" onchange="buscar()">
     <option value="">Todas</option>
-    <option>Frutas</option><option>Verduras</option><option>Carnes</option>
-    <option>Lácteos</option><option>Granos</option><option>Bebidas</option><option>Otros</option>
+    <option value="Frutas">🍎 Frutas</option>
+    <option value="Verduras">🥬 Verduras</option>
+    <option value="Carnes">🍗 Carnes</option>
+    <option value="Lácteos">🥛 Lácteos</option>
+    <option value="Granos">🌾 Granos</option>
+    <option value="Bebidas">🧃 Bebidas</option>
+    <option value="Otros">📦 Otros</option>
   </select>
 
-  <label>Ordenar:</label>
+  <label>📊 Ordenar</label>
   <select id="orden" onchange="buscar()">
-    <option value="precio_asc">Precio: menor a mayor</option>
-    <option value="precio_desc">Precio: mayor a menor</option>
-    <option value="reciente">Más recientes</option>
+    <option value="precio_asc">💰 Menor precio</option>
+    <option value="precio_desc">💰 Mayor precio</option>
+    <option value="reciente">🕐 Más recientes</option>
+    <option value="nombre">🔤 A-Z</option>
   </select>
 </div>
 
+<!-- ─── CONTENIDO ─── -->
 <div class="contenido">
-  <div class="resultados-info" id="info"></div>
-  <div class="grid" id="resultados"></div>
+  <div class="resultados-info" id="info">
+    <span>Cargando productos...</span>
+    <span class="badge-cantidad" id="total-productos">0</span>
+  </div>
+  <div id="resultados"></div>
 </div>
 
-<footer><strong>MercadosApp</strong> — Precios claros para todos</footer>
+<footer>
+  <strong>MercadosApp</strong> — Conectando compradores con los mejores precios ✨
+</footer>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast"></div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════════
@@ -131,12 +218,16 @@ function inicializarDatos() {
     { id: 'p6', nombre: 'Arroz blanco',    categoria: 'Granos',   unidad: 'kg',     precio: 3200,  precioBase: 3200,  mercadoId: 'm1', oferta: null,            emoji: '🌾', fecha: new Date().toISOString(), activo: true },
     { id: 'p7', nombre: 'Huevos AA',       categoria: 'Lácteos',  unidad: 'docena', precio: 13000, precioBase: 13000, mercadoId: 'm2', oferta: null,            emoji: '🥚', fecha: new Date().toISOString(), activo: true },
     { id: 'p8', nombre: 'Aguacate Hass',   categoria: 'Frutas',   unidad: 'unidad', precio: 1500,  precioBase: 1500,  mercadoId: 'm1', oferta: null,            emoji: '🥑', fecha: new Date().toISOString(), activo: true },
+    { id: 'p9', nombre: 'Pan integral',    categoria: 'Otros',    unidad: 'unidad', precio: 3200,  precioBase: 3200,  mercadoId: 'm2', oferta: null,            emoji: '🍞', fecha: new Date().toISOString(), activo: true },
+    { id: 'p10', nombre: 'Jugo de naranja',categoria: 'Bebidas',  unidad: 'litro',  precio: 4500,  precioBase: 4500,  mercadoId: 'm1', oferta: null,            emoji: '🧃', fecha: new Date().toISOString(), activo: true },
   ];
 
   localStorage.setItem('mercadosapp_mercados', JSON.stringify(mercados));
   localStorage.setItem('mercadosapp_productos', JSON.stringify(productos));
   localStorage.setItem('mercadosapp_usuarios', JSON.stringify(usuarios));
   localStorage.setItem('mercadosapp_init', '1');
+
+  console.log('✅ Datos iniciales cargados');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -156,13 +247,25 @@ function getProductosActivos() {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-//  BUSCADOR
+//  TOAST
+// ═══════════════════════════════════════════════════════════════════
+
+function toast(msg, error = false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast visible' + (error ? ' error' : '');
+  clearTimeout(el._timeout);
+  el._timeout = setTimeout(() => el.className = 'toast', 3000);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  BUSCADOR Y FILTROS
 // ═══════════════════════════════════════════════════════════════════
 
 function cargarMercadosFiltro() {
   const mercados = obtenerMercados();
   const select = document.getElementById('filtroMercado');
-  select.innerHTML = '<option value="">Todos</option>';
+  select.innerHTML = '<option value="">Todos los mercados</option>';
   mercados.forEach(m => {
     const opt = document.createElement('option');
     opt.value = m.id;
@@ -173,7 +276,7 @@ function cargarMercadosFiltro() {
 
 function tiempoRelativo(fecha) {
   const seg = Math.floor((new Date() - new Date(fecha)) / 1000);
-  if (seg < 60)    return 'hace unos segundos';
+  if (seg < 60)    return 'ahora';
   if (seg < 3600)  return 'hace ' + Math.floor(seg/60) + ' min';
   if (seg < 86400) return 'hace ' + Math.floor(seg/3600) + ' h';
   return 'hace ' + Math.floor(seg/86400) + ' días';
@@ -191,37 +294,105 @@ function buscar() {
   if (mercadoId) productos = productos.filter(p => p.mercadoId === mercadoId);
   if (categoria) productos = productos.filter(p => p.categoria === categoria);
 
+  // Ordenar
   if (orden === 'precio_asc')  productos.sort((a,b) => a.precio - b.precio);
   if (orden === 'precio_desc') productos.sort((a,b) => b.precio - a.precio);
   if (orden === 'reciente')    productos.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+  if (orden === 'nombre')      productos.sort((a,b) => a.nombre.localeCompare(b.nombre));
 
-  document.getElementById('info').innerHTML = productos.length === 0 ? '' :
-    'Se encontraron <strong>' + productos.length + '</strong> producto' + (productos.length !== 1 ? 's' : '') +
-    (texto ? ' para "<strong>' + texto + '</strong>"' : '');
-
-  const contenedor = document.getElementById('resultados');
+  // Actualizar info
+  document.getElementById('total-productos').textContent = productos.length;
+  const infoEl = document.getElementById('info');
   if (productos.length === 0) {
-    contenedor.innerHTML = '<div class="vacio"><div class="icono">🔍</div><p>No se encontraron productos</p><p style="font-size:13px;margin-top:6px;color:#9ca3af;">Intenta con otra palabra o quita los filtros</p></div>';
+    infoEl.innerHTML = '<span>🔍 No se encontraron productos</span><span class="badge-cantidad">0</span>';
+  } else {
+    infoEl.innerHTML = '<span>📦 Mostrando <strong>' + productos.length + '</strong> producto' + (productos.length !== 1 ? 's' : '') +
+      (texto ? ' para "<strong>' + texto + '</strong>"' : '') +
+      (mercadoId ? ' en el mercado seleccionado' : '') +
+      (categoria ? ' en ' + categoria : '') +
+      '</span><span class="badge-cantidad">' + productos.length + '</span>';
+  }
+
+  // Agrupar por categoría
+  const categorias = {};
+  const mercados = obtenerMercados();
+
+  productos.forEach(p => {
+    const cat = p.categoria || 'Otros';
+    if (!categorias[cat]) categorias[cat] = [];
+    categorias[cat].push(p);
+  });
+
+  const container = document.getElementById('resultados');
+
+  if (productos.length === 0) {
+    container.innerHTML = `
+      <div class="vacio">
+        <div class="icono">🔍</div>
+        <h3>No encontramos resultados</h3>
+        <p>Intenta con otras palabras o quita los filtros</p>
+      </div>
+    `;
     return;
   }
 
-  const mercados = obtenerMercados();
-  contenedor.innerHTML = productos.map(p => {
-    const m = mercados.find(x => x.id === p.mercadoId) || { nombre: 'Mercado' };
-    const imagen = p.imagenUrl
-      ? '<img src="' + p.imagenUrl + '" alt="' + p.nombre + '">'
-      : '<span style="font-size:40px">' + (p.emoji || '📦') + '</span>';
-    return '<div class="tarjeta">' +
-      '<div class="tarjeta-imagen">' + imagen + '</div>' +
-      (p.oferta ? '<div class="badge-oferta">🏷️ ' + p.oferta + '</div>' : '') +
-      '<h3>' + p.nombre + '</h3>' +
-      '<div class="precio">$' + Number(p.precio).toLocaleString('es-CO') + '<span> / ' + p.unidad + '</span></div>' +
-      '<div class="mercado-link">📍 ' + m.nombre + '</div>' +
-      '<div class="fecha">Actualizado ' + tiempoRelativo(p.fecha) + '</div>' +
-      '</div>';
-  }).join('');
+  // Ordenar categorías
+  const ordenCategorias = ['Frutas', 'Verduras', 'Carnes', 'Lácteos', 'Granos', 'Bebidas', 'Otros'];
+  const categoriasOrdenadas = Object.keys(categorias).sort((a, b) => {
+    const ia = ordenCategorias.indexOf(a);
+    const ib = ordenCategorias.indexOf(b);
+    if (ia === -1 && ib === -1) return a.localeCompare(b);
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
+  });
+
+  let html = '';
+  const emojisCat = {
+    'Frutas': '🍎', 'Verduras': '🥬', 'Carnes': '🍗',
+    'Lácteos': '🥛', 'Granos': '🌾', 'Bebidas': '🧃', 'Otros': '📦'
+  };
+
+  categoriasOrdenadas.forEach(cat => {
+    const items = categorias[cat];
+    html += `
+      <div class="categoria-section">
+        <div class="categoria-header">
+          <span class="icono">${emojisCat[cat] || '📦'}</span>
+          <h2>${cat}</h2>
+          <span class="count">${items.length}</span>
+        </div>
+        <div class="grid">
+    `;
+
+    items.forEach(p => {
+      const m = mercados.find(x => x.id === p.mercadoId) || { nombre: 'Mercado' };
+      const imagen = p.imagenUrl
+        ? '<img src="' + p.imagenUrl + '" alt="' + p.nombre + '">'
+        : '<span style="font-size:38px">' + (p.emoji || '📦') + '</span>';
+
+      html += `
+        <div class="tarjeta">
+          <div class="tarjeta-imagen">${imagen}</div>
+          ${p.oferta ? '<div class="badge-oferta">🏷️ ' + p.oferta + '</div>' : ''}
+          <h3 title="${p.nombre}">${p.nombre}</h3>
+          <div class="precio">$${Number(p.precio).toLocaleString('es-CO')}<span> / ${p.unidad}</span></div>
+          <div class="mercado-link">${m.nombre}</div>
+          <div class="fecha">🕐 ${tiempoRelativo(p.fecha)}</div>
+        </div>
+      `;
+    });
+
+    html += `
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
 }
 
+// Enter en búsqueda
 document.getElementById('busqueda').addEventListener('keypress', e => {
   if (e.key === 'Enter') buscar();
 });
@@ -234,9 +405,7 @@ inicializarDatos();
 cargarMercadosFiltro();
 buscar();
 
-console.log('👤 Mercaderes de prueba:');
-console.log('  carlos@mercado.com / 123456');
-console.log('  maria@placita.com / 123456');
+console.log('🛒 MercadosApp — Versión moderna con categorías');
 </script>
 </body>
 </html>

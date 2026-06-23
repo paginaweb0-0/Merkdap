@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MercadosApp — Busca y compara precios</title>
   <style>
-    /* ═══════════════════════════════════════════════════════════════
-       RESET Y VARIABLES
-       ═══════════════════════════════════════════════════════════════ */
     * {
       margin: 0;
       padding: 0;
@@ -18,21 +15,22 @@
       --primary: #0a0e1a;
       --primary-light: #141b33;
       --primary-dark: #050812;
-      --primary-glow: #00d4ff;
-      --primary-glow2: #7c3aed;
-      --accent: #f59e0b;
-      --accent-hover: #d97706;
-      --accent-glow: #fbbf24;
-      --pink-glow: #ec4899;
+      --cyan: #00d4ff;
+      --violet: #7c3aed;
+      --pink: #ec4899;
+      --amber: #f59e0b;
+      --amber-hover: #d97706;
+      --green: #10b981;
+      --red: #ef4444;
       --glass-bg: rgba(255, 255, 255, 0.03);
-      --glass-border: rgba(255, 255, 255, 0.06);
-      --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-      --text-primary: #f8fafc;
-      --text-secondary: #94a3b8;
+      --glass-border: rgba(255, 255, 255, 0.07);
+      --text: #f8fafc;
+      --text-dim: #94a3b8;
       --radius: 20px;
       --radius-sm: 12px;
+      --radius-xs: 8px;
       --radius-full: 9999px;
-      --transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     html {
@@ -42,366 +40,373 @@
     body {
       font-family: 'Inter', -apple-system, system-ui, sans-serif;
       background: var(--primary-dark);
-      color: var(--text-primary);
+      color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
       background-image:
-        radial-gradient(ellipse at 10% 20%, rgba(0, 212, 255, 0.06) 0%, transparent 50%),
-        radial-gradient(ellipse at 90% 80%, rgba(124, 58, 237, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 10% 20%, rgba(0, 212, 255, 0.06) 0%, transparent 55%),
+        radial-gradient(ellipse at 90% 80%, rgba(124, 58, 237, 0.06) 0%, transparent 55%),
         radial-gradient(ellipse at 50% 50%, rgba(236, 72, 153, 0.03) 0%, transparent 70%);
     }
 
-    /* ═══════════════════════════════════════════════════════════════
-       SCROLLBAR
-       ═══════════════════════════════════════════════════════════════ */
     ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
     }
     ::-webkit-scrollbar-track {
       background: var(--primary);
     }
     ::-webkit-scrollbar-thumb {
-      background: linear-gradient(135deg, var(--primary-glow), var(--primary-glow2));
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
       border-radius: 10px;
     }
 
-    /* ═══════════════════════════════════════════════════════════════
-       ANIMACIONES GLOBALES
-       ═══════════════════════════════════════════════════════════════ */
+    /* ── ANIMATIONS ─────────────────────────────────── */
     @keyframes float {
       0%,
       100% {
-        transform: translateY(0px) rotate(0deg);
+        transform: translateY(0) rotate(0deg)
       }
       50% {
-        transform: translateY(-10px) rotate(2deg);
+        transform: translateY(-10px) rotate(2deg)
       }
     }
-
-    @keyframes pulseGlow {
-      0%,
-      100% {
-        box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
-      }
-      50% {
-        box-shadow: 0 0 40px rgba(0, 212, 255, 0.2), 0 0 80px rgba(124, 58, 237, 0.1);
-      }
-    }
-
     @keyframes shimmer {
       0% {
-        background-position: -200% center;
+        background-position: -200% center
       }
       100% {
-        background-position: 200% center;
+        background-position: 200% center
       }
     }
-
-    @keyframes slideIn {
+    @keyframes slideUp {
       from {
         opacity: 0;
-        transform: translateY(40px) scale(0.95);
+        transform: translateY(30px) scale(.96)
       }
       to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateY(0) scale(1)
       }
     }
-
-    @keyframes rotateGlow {
+    @keyframes rotateRing {
       0% {
-        transform: rotate(0deg);
+        transform: rotate(0deg)
       }
       100% {
-        transform: rotate(360deg);
+        transform: rotate(360deg)
       }
     }
-
     @keyframes modalIn {
       from {
         opacity: 0;
-        transform: scale(0.9) translateY(30px);
+        transform: scale(.9) translateY(30px)
       }
       to {
         opacity: 1;
-        transform: scale(1) translateY(0);
+        transform: scale(1) translateY(0)
       }
     }
-
-    @keyframes modalOverlayIn {
+    @keyframes overlayIn {
       from {
-        opacity: 0;
+        opacity: 0
       }
       to {
-        opacity: 1;
+        opacity: 1
+      }
+    }
+    @keyframes pulseGlow {
+      0%,
+      100% {
+        box-shadow: 0 0 20px rgba(0, 212, 255, .1)
+      }
+      50% {
+        box-shadow: 0 0 40px rgba(0, 212, 255, .25), 0 0 80px rgba(124, 58, 237, .12)
+      }
+    }
+    @keyframes pulse {
+      0%,
+      100% {
+        opacity: 1
+      }
+      50% {
+        opacity: .45
+      }
+    }
+    @keyframes toastIn {
+      from {
+        transform: translateY(80px) scale(.9);
+        opacity: 0
+      }
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1
+      }
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
       }
     }
 
-    /* ═══════════════════════════════════════════════════════════════
-       NAV
-       ═══════════════════════════════════════════════════════════════ */
+    /* ── NAV ──────────────────────────────────────── */
     nav {
-      background: rgba(10, 14, 26, 0.85);
+      background: rgba(10, 14, 26, .88);
       backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
       border-bottom: 1px solid var(--glass-border);
       padding: 0 32px;
-      height: 76px;
+      height: 72px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: sticky;
       top: 0;
-      z-index: 100;
-      box-shadow: 0 4px 40px rgba(0, 0, 0, 0.4);
+      z-index: 200;
+      box-shadow: 0 4px 40px rgba(0, 0, 0, .45);
     }
 
-    nav .logo {
-      font-size: 24px;
+    .logo {
+      font-size: 22px;
       font-weight: 800;
+      letter-spacing: -.5px;
       display: flex;
       align-items: center;
       gap: 10px;
       cursor: pointer;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, var(--primary-glow), var(--primary-glow2), var(--pink-glow));
+      background: linear-gradient(135deg, var(--cyan), var(--violet), var(--pink));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      background-size: 300% 300%;
+      background-size: 300%;
       animation: shimmer 4s ease-in-out infinite;
-      position: relative;
     }
 
-    nav .logo::after {
-      content: '';
-      position: absolute;
-      inset: -4px -8px;
-      background: linear-gradient(135deg, var(--primary-glow), var(--primary-glow2), var(--pink-glow));
-      opacity: 0.1;
-      filter: blur(20px);
-      border-radius: 20px;
-      z-index: -1;
-    }
-
-    nav .logo span {
-      background: rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(10px);
+    .logo-badge {
       font-size: 10px;
-      padding: 3px 14px;
+      padding: 3px 12px;
       border-radius: var(--radius-full);
-      font-weight: 600;
-      color: var(--text-secondary);
-      -webkit-text-fill-color: var(--text-secondary);
+      background: rgba(255, 255, 255, .05);
       border: 1px solid var(--glass-border);
-      letter-spacing: 0.5px;
+      color: var(--text-dim);
+      -webkit-text-fill-color: var(--text-dim);
+      font-weight: 600;
+      letter-spacing: .5px;
       text-transform: uppercase;
     }
 
-    nav .nav-links {
+    .nav-links {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
     }
 
-    nav .nav-links a {
-      color: var(--text-secondary);
+    .nav-links a {
+      color: var(--text-dim);
       text-decoration: none;
-      font-size: 14px;
-      cursor: pointer;
-      padding: 8px 18px;
-      border-radius: var(--radius-full);
-      transition: var(--transition);
-      position: relative;
+      font-size: 13.5px;
       font-weight: 500;
-    }
-
-    nav .nav-links a:hover {
-      color: white;
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    nav .nav-links a::before {
-      content: '';
-      position: absolute;
-      bottom: 2px;
-      left: 50%;
-      width: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--primary-glow), var(--primary-glow2));
-      transition: var(--transition);
-      transform: translateX(-50%);
-      border-radius: 10px;
-    }
-
-    nav .nav-links a:hover::before {
-      width: 50%;
-    }
-
-    nav .nav-links .btn-panel {
-      background: linear-gradient(135deg, var(--primary-glow), var(--primary-glow2));
-      color: var(--primary-dark);
-      border: none;
-      padding: 10px 28px;
+      padding: 7px 16px;
       border-radius: var(--radius-full);
-      font-size: 14px;
-      font-weight: 700;
+      transition: var(--ease);
       cursor: pointer;
-      transition: var(--transition);
-      text-decoration: none;
-      display: inline-block;
-      box-shadow: 0 4px 30px rgba(0, 212, 255, 0.15);
+    }
+
+    .nav-links a:hover {
+      color: white;
+      background: rgba(255, 255, 255, .05);
+    }
+
+    .btn-panel {
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
+      color: #050812 !important;
+      font-weight: 700 !important;
+      border-radius: var(--radius-full) !important;
+      padding: 9px 24px !important;
+      box-shadow: 0 4px 24px rgba(0, 212, 255, .15);
+      transition: var(--ease) !important;
+    }
+
+    .btn-panel:hover {
+      transform: translateY(-2px) scale(1.02) !important;
+      box-shadow: 0 8px 40px rgba(0, 212, 255, .3) !important;
+    }
+
+    /* ── CART BADGE ─────────────────────────────────── */
+    .cart-btn {
       position: relative;
-      overflow: hidden;
-    }
-
-    nav .nav-links .btn-panel::after {
-      content: '';
-      position: absolute;
-      inset: -2px;
-      background: linear-gradient(135deg, var(--primary-glow), var(--primary-glow2), var(--pink-glow));
-      opacity: 0;
-      transition: var(--transition);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-dim);
+      padding: 7px 16px;
       border-radius: var(--radius-full);
-      z-index: -1;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--ease);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    nav .nav-links .btn-panel:hover {
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 8px 40px rgba(0, 212, 255, 0.3);
+    .cart-btn:hover {
+      color: white;
+      border-color: var(--cyan);
     }
 
-    nav .nav-links .btn-panel:hover::after {
-      opacity: 0.3;
+    .cart-count {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: linear-gradient(135deg, var(--amber), #f97316);
+      color: #050812;
+      font-size: 10px;
+      font-weight: 800;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* ═══════════════════════════════════════════════════════════════
-       HERO
-       ═══════════════════════════════════════════════════════════════ */
+    /* ── HERO ──────────────────────────────────────── */
     .hero {
-      padding: 70px 24px 50px;
+      padding: 64px 24px 44px;
       text-align: center;
       position: relative;
       overflow: hidden;
     }
 
-    .hero::before {
-      content: '';
+    .hero-orb {
       position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background:
-        radial-gradient(ellipse at 30% 50%, rgba(0, 212, 255, 0.04) 0%, transparent 50%),
-        radial-gradient(ellipse at 70% 50%, rgba(124, 58, 237, 0.04) 0%, transparent 50%);
-      animation: heroGlow 25s ease-in-out infinite alternate;
-      pointer-events: none;
-    }
-
-    @keyframes heroGlow {
-      0% {
-        transform: translate(0, 0) rotate(0deg) scale(1);
-      }
-      100% {
-        transform: translate(3%, 5%) rotate(3deg) scale(1.1);
-      }
-    }
-
-    .hero .orb {
-      position: absolute;
-      width: 300px;
-      height: 300px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(0, 212, 255, 0.08), transparent 70%);
-      top: -100px;
-      right: -100px;
-      animation: float 8s ease-in-out infinite;
       pointer-events: none;
     }
 
-    .hero .orb2 {
-      position: absolute;
+    .hero-orb-1 {
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(0, 212, 255, .07), transparent 70%);
+      top: -110px;
+      right: -110px;
+      animation: float 8s ease-in-out infinite;
+    }
+    .hero-orb-2 {
       width: 200px;
       height: 200px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(124, 58, 237, 0.06), transparent 70%);
-      bottom: -50px;
-      left: -50px;
-      animation: float 10s ease-in-out infinite reverse;
-      pointer-events: none;
+      background: radial-gradient(circle, rgba(124, 58, 237, .06), transparent 70%);
+      bottom: -60px;
+      left: -60px;
+      animation: float 11s ease-in-out infinite reverse;
     }
 
     .hero h1 {
-      font-size: 54px;
+      font-size: 52px;
       font-weight: 800;
       letter-spacing: -1.5px;
-      margin-bottom: 12px;
-      position: relative;
       line-height: 1.1;
+      margin-bottom: 14px;
+      position: relative;
     }
 
-    .hero h1 .gradient-text {
-      background: linear-gradient(135deg, #ffffff 0%, var(--primary-glow) 40%, var(--primary-glow2) 70%, var(--pink-glow) 100%);
+    .gradient-text {
+      background: linear-gradient(135deg, #fff 0%, var(--cyan) 40%, var(--violet) 70%, var(--pink) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      background-size: 300% 300%;
+      background-size: 300%;
       animation: shimmer 5s ease-in-out infinite;
     }
 
-    .hero h1 .highlight {
-      background: linear-gradient(135deg, var(--accent), #f97316, var(--accent-glow));
+    .hero p {
+      font-size: 16px;
+      color: var(--text-dim);
+      max-width: 540px;
+      margin: 0 auto 32px;
+      line-height: 1.65;
+    }
+
+    /* stats row */
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      margin-bottom: 36px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 22px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      background-size: 300% 300%;
-      animation: shimmer 4s ease-in-out infinite;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-top: 2px;
     }
 
-    .hero p {
-      font-size: 17px;
-      color: var(--text-secondary);
-      margin-bottom: 36px;
-      position: relative;
-      max-width: 560px;
-      margin-left: auto;
-      margin-right: auto;
-      line-height: 1.6;
-    }
-
-    /* ═══════════════════════════════════════════════════════════════
-       SEARCH BAR
-       ═══════════════════════════════════════════════════════════════ */
+    /* ── SEARCH BAR ─────────────────────────────────── */
     .search-bar {
       display: flex;
-      gap: 12px;
-      max-width: 620px;
+      gap: 10px;
+      max-width: 640px;
       margin: 0 auto;
-      position: relative;
-      animation: slideIn 0.8s ease forwards;
+      animation: slideUp .7s ease forwards;
     }
 
-    .search-bar .search-wrapper {
+    .search-wrapper {
       flex: 1;
       position: relative;
     }
 
-    .search-bar .search-wrapper .search-icon {
+    .search-icon {
       position: absolute;
       left: 18px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 18px;
-      opacity: 0.5;
+      font-size: 17px;
+      opacity: .5;
       pointer-events: none;
     }
 
-    .search-bar input {
+    .search-clear-btn {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-dim);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 12px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: var(--ease);
+    }
+
+    .search-clear-btn:hover {
+      color: white;
+      background: rgba(239, 68, 68, .2);
+      border-color: var(--red);
+    }
+
+    #busqueda {
       width: 100%;
-      padding: 18px 20px 18px 50px;
+      padding: 17px 48px 17px 48px;
       border-radius: var(--radius-full);
       border: 1px solid var(--glass-border);
       background: var(--glass-bg);
@@ -409,555 +414,238 @@
       font-size: 15px;
       outline: none;
       color: white;
-      transition: var(--transition);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+      transition: var(--ease);
     }
 
-    .search-bar input::placeholder {
-      color: var(--text-secondary);
+    #busqueda::placeholder {
+      color: var(--text-dim);
     }
-
-    .search-bar input:focus {
-      border-color: var(--primary-glow);
-      box-shadow: 0 4px 40px rgba(0, 212, 255, 0.1), 0 0 60px rgba(0, 212, 255, 0.03);
+    #busqueda:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 4px 40px rgba(0, 212, 255, .1);
       transform: scale(1.01);
     }
 
-    .search-bar .btn-search {
-      background: linear-gradient(135deg, var(--primary-glow), var(--primary-glow2));
+    .btn-search {
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
       color: var(--primary-dark);
       border: none;
-      padding: 18px 38px;
+      padding: 17px 36px;
       border-radius: var(--radius-full);
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      transition: var(--transition);
+      transition: var(--ease);
       display: flex;
       align-items: center;
-      gap: 10px;
-      box-shadow: 0 4px 30px rgba(0, 212, 255, 0.15);
-      position: relative;
-      overflow: hidden;
+      gap: 8px;
+      box-shadow: 0 4px 28px rgba(0, 212, 255, .15);
       white-space: nowrap;
     }
 
-    .search-bar .btn-search::before {
-      content: '';
-      position: absolute;
-      inset: -2px;
-      background: linear-gradient(135deg, var(--primary-glow), var(--primary-glow2), var(--pink-glow));
-      opacity: 0;
-      transition: var(--transition);
-      border-radius: var(--radius-full);
-      z-index: -1;
-    }
-
-    .search-bar .btn-search:hover {
+    .btn-search:hover {
       transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 8px 50px rgba(0, 212, 255, 0.3);
+      box-shadow: 0 8px 50px rgba(0, 212, 255, .3);
+    }
+    .btn-search:active {
+      transform: scale(.97);
     }
 
-    .search-bar .btn-search:hover::before {
-      opacity: 0.3;
-    }
-
-    .search-bar .btn-search:active {
-      transform: scale(0.97);
-    }
-
-    /* ═══════════════════════════════════════════════════════════════
-       CHIPS
-       ═══════════════════════════════════════════════════════════════ */
-    .hero .chips {
+    /* ── CHIPS ──────────────────────────────────────── */
+    .chips {
       display: flex;
       gap: 8px;
       justify-content: center;
       flex-wrap: wrap;
-      margin-top: 24px;
-      position: relative;
+      margin-top: 22px;
     }
 
-    .hero .chips .chip {
-      padding: 6px 18px;
+    .chip {
+      padding: 6px 16px;
       border-radius: var(--radius-full);
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
       font-size: 12px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: var(--transition);
-      backdrop-filter: blur(10px);
       font-weight: 500;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: var(--ease);
       user-select: none;
     }
 
-    .hero .chips .chip:hover {
-      border-color: var(--primary-glow);
+    .chip:hover {
+      border-color: var(--cyan);
       color: white;
       transform: translateY(-2px);
-      box-shadow: 0 4px 20px rgba(0, 212, 255, 0.05);
     }
-
-    .hero .chips .chip .emoji {
-      margin-right: 4px;
-    }
-
-    .hero .chips .chip.active {
-      border-color: var(--primary-glow);
+    .chip.active {
+      border-color: var(--cyan);
       color: white;
-      background: rgba(0, 212, 255, 0.05);
+      background: rgba(0, 212, 255, .06);
     }
 
-    /* ═══════════════════════════════════════════════════════════════
-       FILTROS
-       ═══════════════════════════════════════════════════════════════ */
+    /* ── FILTER BAR ─────────────────────────────────── */
     .filtros {
-      background: rgba(10, 14, 26, 0.7);
+      background: rgba(10, 14, 26, .75);
       backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
       border-bottom: 1px solid var(--glass-border);
       border-top: 1px solid var(--glass-border);
-      padding: 14px 32px;
+      padding: 12px 28px;
       display: flex;
-      gap: 16px;
+      gap: 12px;
       flex-wrap: wrap;
       align-items: center;
       position: sticky;
-      top: 76px;
-      z-index: 50;
+      top: 72px;
+      z-index: 100;
     }
 
-    .filtros .filtro-group {
+    .filtro-group {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
       border-radius: var(--radius-full);
-      padding: 4px 16px 4px 12px;
-      transition: var(--transition);
+      padding: 4px 14px 4px 10px;
+      transition: var(--ease);
     }
 
-    .filtros .filtro-group:hover {
-      border-color: rgba(255, 255, 255, 0.1);
+    .filtro-group:hover {
+      border-color: rgba(255, 255, 255, .12);
     }
-
-    .filtros .filtro-group label {
+    .filtro-group label {
       font-size: 10px;
-      color: var(--text-secondary);
+      color: var(--text-dim);
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: .08em;
       white-space: nowrap;
     }
 
     .filtros select {
-      padding: 8px 12px 8px 4px;
+      padding: 7px 20px 7px 2px;
       border: none;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
       background: transparent;
       color: white;
-      cursor: pointer;
-      transition: var(--transition);
-      min-width: 120px;
-      outline: none;
+      font-size: 13px;
       font-weight: 500;
+      outline: none;
+      cursor: pointer;
+      min-width: 110px;
       appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 4px center;
-      padding-right: 24px;
-    }
-
-    .filtros select:focus {
-      color: var(--primary-glow);
+      background-position: right 2px center;
     }
 
     .filtros select option {
       background: var(--primary);
       color: white;
-      padding: 8px;
+    }
+    .filtros select:focus {
+      color: var(--cyan);
     }
 
-    .filtros .btn-comparar {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      color: var(--text-secondary);
-      padding: 10px 24px;
-      border-radius: var(--radius-full);
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-      margin-left: auto;
+    /* price range */
+    .price-range-group {
       display: flex;
       align-items: center;
       gap: 8px;
-      backdrop-filter: blur(10px);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-full);
+      padding: 4px 14px;
+    }
+
+    .price-range-group label {
+      font-size: 10px;
+      color: var(--text-dim);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
       white-space: nowrap;
     }
 
-    .filtros .btn-comparar:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: var(--primary-glow);
+    .price-range-group input[type="range"] {
+      -webkit-appearance: none;
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--cyan), var(--violet));
+      border-radius: 10px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .price-range-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .4);
+      cursor: pointer;
+    }
+
+    .price-label {
+      font-size: 12px;
+      color: var(--cyan);
+      font-weight: 700;
+      min-width: 64px;
+      text-align: right;
+    }
+
+    .filtros-right {
+      display: flex;
+      gap: 8px;
+      margin-left: auto;
+      align-items: center;
+    }
+
+    .btn-comparar,
+    .btn-favoritos-ver {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-dim);
+      padding: 9px 20px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--ease);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
+    }
+
+    .btn-comparar:hover,
+    .btn-favoritos-ver:hover {
+      border-color: var(--cyan);
       color: white;
       transform: translateY(-2px);
     }
-
-    .filtros .btn-comparar.activo {
-      background: linear-gradient(135deg, var(--accent), #f97316);
+    .btn-comparar.activo {
+      background: linear-gradient(135deg, var(--amber), #f97316);
       border-color: transparent;
       color: var(--primary-dark);
-      box-shadow: 0 4px 30px rgba(245, 158, 11, 0.2);
+      box-shadow: 0 4px 28px rgba(245, 158, 11, .2);
       animation: pulseGlow 2s ease-in-out infinite;
     }
 
-    .filtros .btn-comparar.activo:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 40px rgba(245, 158, 11, 0.3);
-    }
-
-    /* ═══════════════════════════════════════════════════════════════
-       CONTENIDO
-       ═══════════════════════════════════════════════════════════════ */
+    /* ── CONTENT ──────────────────────────────────── */
     .contenido {
-      max-width: 1280px;
+      max-width: 1300px;
       margin: 0 auto;
-      padding: 32px 24px;
+      padding: 28px 22px;
     }
 
-    /* ═══════════════════════════════════════════════════════════════
-       CATEGORÍAS
-       ═══════════════════════════════════════════════════════════════ */
-    .categoria-section {
-      margin-bottom: 48px;
-      animation: slideIn 0.6s ease forwards;
-    }
-
-    .categoria-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--glass-border);
-      position: relative;
-      flex-wrap: wrap;
-    }
-
-    .categoria-header::after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      width: 60px;
-      height: 2px;
-      background: linear-gradient(90deg, var(--primary-glow), var(--primary-glow2));
-      border-radius: 10px;
-    }
-
-    .categoria-header .icono {
-      font-size: 32px;
-      filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.1));
-    }
-
-    .categoria-header h2 {
-      font-size: 22px;
-      font-weight: 700;
-      color: white;
-      letter-spacing: -0.3px;
-    }
-
-    .categoria-header .count {
-      font-size: 13px;
-      color: var(--text-secondary);
-      font-weight: 500;
-      background: var(--glass-bg);
-      padding: 2px 14px;
-      border-radius: var(--radius-full);
-      border: 1px solid var(--glass-border);
-    }
-
-    .categoria-header .view-all {
-      margin-left: auto;
-      font-size: 13px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 16px;
-      border-radius: var(--radius-full);
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-    }
-
-    .categoria-header .view-all:hover {
-      color: white;
-      border-color: var(--primary-glow);
-      transform: translateX(4px);
-    }
-
-    /* ═══════════════════════════════════════════════════════════════
-       GRID
-       ═══════════════════════════════════════════════════════════════ */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-      gap: 20px;
-    }
-
-    /* ═══════════════════════════════════════════════════════════════
-       TARJETA
-       ═══════════════════════════════════════════════════════════════ */
-    .tarjeta {
-      background: var(--glass-bg);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      border-radius: var(--radius);
-      border: 1px solid var(--glass-border);
-      padding: 22px;
-      transition: var(--transition);
-      position: relative;
-      overflow: hidden;
-      cursor: default;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .tarjeta::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle at 30% 30%, rgba(0, 212, 255, 0.02), transparent 50%);
-      opacity: 0;
-      transition: var(--transition);
-      pointer-events: none;
-    }
-
-    .tarjeta::after {
-      content: '';
-      position: absolute;
-      inset: -1px;
-      border-radius: var(--radius);
-      background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), transparent, rgba(124, 58, 237, 0.1));
-      opacity: 0;
-      transition: var(--transition);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .tarjeta:hover::before {
-      opacity: 1;
-    }
-
-    .tarjeta:hover::after {
-      opacity: 1;
-    }
-
-    .tarjeta:hover {
-      transform: translateY(-8px) scale(1.01);
-      border-color: rgba(0, 212, 255, 0.2);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 212, 255, 0.03);
-    }
-
-    .tarjeta>* {
-      position: relative;
-      z-index: 1;
-    }
-
-    .tarjeta .tarjeta-imagen {
-      width: 100%;
-      height: 120px;
-      background: rgba(255, 255, 255, 0.02);
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 48px;
-      margin-bottom: 14px;
-      overflow: hidden;
-      transition: var(--transition);
-      border: 1px solid var(--glass-border);
-      position: relative;
-      flex-shrink: 0;
-    }
-
-    .tarjeta .tarjeta-imagen .glow-ring {
-      position: absolute;
-      inset: -4px;
-      border-radius: var(--radius-sm);
-      background: conic-gradient(from 0deg, transparent, rgba(0, 212, 255, 0.05), transparent, rgba(124, 58, 237, 0.05), transparent);
-      opacity: 0;
-      transition: var(--transition);
-      animation: rotateGlow 4s linear infinite;
-    }
-
-    .tarjeta:hover .tarjeta-imagen .glow-ring {
-      opacity: 1;
-    }
-
-    .tarjeta:hover .tarjeta-imagen {
-      transform: scale(1.04);
-      border-color: var(--primary-glow);
-    }
-
-    .tarjeta h3 {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 2px;
-      display: -webkit-box;
-      -webkit-line-clamp: 1;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      color: white;
-    }
-
-    .tarjeta .precio {
-      font-size: 24px;
-      font-weight: 800;
-      margin: 8px 0 4px;
-      background: linear-gradient(135deg, var(--primary-glow), var(--primary-glow2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      display: inline-block;
-    }
-
-    .tarjeta .precio span {
-      font-size: 13px;
-      color: var(--text-secondary);
-      font-weight: 400;
-      -webkit-text-fill-color: var(--text-secondary);
-    }
-
-    .tarjeta .mercado-link {
-      font-size: 12px;
-      color: var(--primary-glow);
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      opacity: 0.7;
-      transition: var(--transition);
-    }
-
-    .tarjeta .mercado-link:hover {
-      opacity: 1;
-    }
-
-    .tarjeta .fecha {
-      font-size: 11px;
-      color: var(--text-secondary);
-      margin-top: 6px;
-      opacity: 0.5;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .tarjeta .badge-oferta {
-      display: inline-block;
-      background: rgba(245, 158, 11, 0.15);
-      color: var(--accent);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 3px 16px;
-      border-radius: var(--radius-full);
-      margin-bottom: 6px;
-      border: 1px solid rgba(245, 158, 11, 0.1);
-      backdrop-filter: blur(10px);
-      align-self: flex-start;
-    }
-
-    .tarjeta .badge-nuevo {
-      display: inline-block;
-      background: rgba(0, 212, 255, 0.1);
-      color: var(--primary-glow);
-      font-size: 10px;
-      font-weight: 600;
-      padding: 2px 12px;
-      border-radius: var(--radius-full);
-      margin-bottom: 6px;
-      border: 1px solid rgba(0, 212, 255, 0.05);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      align-self: flex-start;
-    }
-
-    .tarjeta .btn-add {
-      margin-top: auto;
-      margin-top: 14px;
-      width: 100%;
-      padding: 10px;
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius-sm);
-      background: var(--glass-bg);
-      color: var(--text-secondary);
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-      backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .tarjeta .btn-add:hover {
-      background: linear-gradient(135deg, var(--primary-glow), var(--primary-glow2));
-      color: var(--primary-dark);
-      border-color: transparent;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15);
-    }
-
-    .tarjeta .btn-add:active {
-      transform: scale(0.97);
-    }
-
-    /* ═══════════════════════════════════════════════════════════════
-       VACIO
-       ═══════════════════════════════════════════════════════════════ */
-    .vacio {
-      text-align: center;
-      padding: 80px 20px;
-      color: var(--text-secondary);
-      grid-column: 1/-1;
-    }
-
-    .vacio .icono {
-      font-size: 64px;
-      margin-bottom: 16px;
-      display: block;
-      opacity: 0.5;
-    }
-
-    .vacio h3 {
-      font-size: 20px;
-      color: white;
-      margin-bottom: 6px;
-    }
-
-    .vacio p {
-      font-size: 14px;
-    }
-
-    /* ═══════════════════════════════════════════════════════════════
-       RESULTADOS INFO
-       ═══════════════════════════════════════════════════════════════ */
+    /* ── RESULTS INFO ───────────────────────────────── */
     .resultados-info {
-      font-size: 14px;
-      color: var(--text-secondary);
-      margin-bottom: 24px;
-      padding: 16px 24px;
+      font-size: 13.5px;
+      color: var(--text-dim);
+      margin-bottom: 22px;
+      padding: 14px 20px;
       background: var(--glass-bg);
       backdrop-filter: blur(20px);
       border-radius: var(--radius-sm);
@@ -972,48 +660,620 @@
     .resultados-info strong {
       color: white;
     }
-
-    .resultados-info .badge-cantidad {
-      background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(124, 58, 237, 0.1));
-      color: var(--primary-glow);
-      padding: 2px 18px;
+    .badge-count {
+      background: linear-gradient(135deg, rgba(0, 212, 255, .12), rgba(124, 58, 237, .12));
+      color: var(--cyan);
+      padding: 2px 16px;
       border-radius: var(--radius-full);
       font-weight: 700;
       font-size: 14px;
-      border: 1px solid rgba(0, 212, 255, 0.05);
+      border: 1px solid rgba(0, 212, 255, .08);
     }
-
-    .resultados-info .modo-comparar {
-      color: var(--accent);
+    .modo-comparar {
+      color: var(--amber);
       font-weight: 700;
-      animation: pulseText 2s ease-in-out infinite;
+      animation: pulse 2s ease-in-out infinite;
     }
 
-    @keyframes pulseText {
-      0%,
-      100% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.5;
-      }
+    /* ── CATEGORY SECTION ─────────────────────────── */
+    .categoria-section {
+      margin-bottom: 46px;
+      animation: slideUp .55s ease forwards;
     }
 
-    /* ═══════════════════════════════════════════════════════════════
-       MODAL (VENTANA EMERGENTE)
-       ═══════════════════════════════════════════════════════════════ */
+    .categoria-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--glass-border);
+      position: relative;
+      flex-wrap: wrap;
+    }
+
+    .categoria-header::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 56px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--cyan), var(--violet));
+      border-radius: 10px;
+    }
+
+    .categoria-header .icono {
+      font-size: 30px;
+    }
+    .categoria-header h2 {
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: -.3px;
+    }
+    .categoria-header .count {
+      font-size: 12px;
+      color: var(--text-dim);
+      background: var(--glass-bg);
+      padding: 2px 12px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--glass-border);
+    }
+    .view-all {
+      margin-left: auto;
+      font-size: 12.5px;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: var(--ease);
+      padding: 4px 14px;
+      border-radius: var(--radius-full);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+    }
+    .view-all:hover {
+      color: white;
+      border-color: var(--cyan);
+      transform: translateX(4px);
+    }
+
+    /* ── GRID ─────────────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    /* ── CARD ─────────────────────────────────────── */
+    .tarjeta {
+      background: var(--glass-bg);
+      backdrop-filter: blur(30px);
+      border-radius: var(--radius);
+      border: 1px solid var(--glass-border);
+      padding: 20px;
+      transition: var(--ease);
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tarjeta::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(0, 212, 255, .08), transparent, rgba(124, 58, 237, .08));
+      opacity: 0;
+      transition: var(--ease);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .tarjeta:hover::after {
+      opacity: 1;
+    }
+    .tarjeta:hover {
+      transform: translateY(-7px) scale(1.01);
+      border-color: rgba(0, 212, 255, .22);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .4), 0 0 40px rgba(0, 212, 255, .03);
+    }
+    .tarjeta>* {
+      position: relative;
+      z-index: 1;
+    }
+
+    .tarjeta-imagen {
+      width: 100%;
+      height: 110px;
+      background: rgba(255, 255, 255, .02);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      margin-bottom: 13px;
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      position: relative;
+      flex-shrink: 0;
+      transition: var(--ease);
+    }
+
+    .glow-ring {
+      position: absolute;
+      inset: -4px;
+      border-radius: var(--radius-sm);
+      background: conic-gradient(from 0deg, transparent, rgba(0, 212, 255, .05), transparent, rgba(124, 58, 237, .05), transparent);
+      opacity: 0;
+      animation: rotateRing 4s linear infinite;
+      transition: var(--ease);
+    }
+
+    .tarjeta:hover .glow-ring {
+      opacity: 1;
+    }
+    .tarjeta:hover .tarjeta-imagen {
+      border-color: var(--cyan);
+      transform: scale(1.04);
+    }
+
+    .tarjeta h3 {
+      font-size: 14.5px;
+      font-weight: 600;
+      margin-bottom: 2px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: white;
+    }
+
+    .precio {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 8px 0 3px;
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline-block;
+    }
+
+    .precio span {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-weight: 400;
+      -webkit-text-fill-color: var(--text-dim);
+    }
+
+    .precio-tendencia {
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+    .tendencia-baja {
+      color: var(--green);
+    }
+    .tendencia-alta {
+      color: var(--red);
+    }
+    .tendencia-igual {
+      color: var(--text-dim);
+    }
+
+    .mercado-link {
+      font-size: 11.5px;
+      color: var(--cyan);
+      font-weight: 500;
+      opacity: .7;
+      transition: var(--ease);
+    }
+    .mercado-link:hover {
+      opacity: 1;
+    }
+
+    .fecha {
+      font-size: 10.5px;
+      color: var(--text-dim);
+      margin-top: 5px;
+      opacity: .5;
+    }
+
+    .badge-oferta {
+      display: inline-block;
+      background: rgba(245, 158, 11, .14);
+      color: var(--amber);
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 2px 12px;
+      border-radius: var(--radius-full);
+      margin-bottom: 5px;
+      border: 1px solid rgba(245, 158, 11, .08);
+      align-self: flex-start;
+    }
+    .badge-nuevo {
+      display: inline-block;
+      background: rgba(0, 212, 255, .08);
+      color: var(--cyan);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: var(--radius-full);
+      margin-bottom: 5px;
+      border: 1px solid rgba(0, 212, 255, .05);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      align-self: flex-start;
+    }
+
+    .tarjeta-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: auto;
+      padding-top: 13px;
+    }
+
+    .btn-add {
+      flex: 1;
+      padding: 9px 6px;
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xs);
+      background: var(--glass-bg);
+      color: var(--text-dim);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--ease);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .btn-add:hover {
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
+      color: var(--primary-dark);
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 212, 255, .15);
+    }
+    .btn-add:active {
+      transform: scale(.97);
+    }
+
+    .btn-fav {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xs);
+      background: var(--glass-bg);
+      color: var(--text-dim);
+      font-size: 15px;
+      cursor: pointer;
+      transition: var(--ease);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .btn-fav:hover {
+      border-color: var(--pink);
+      color: var(--pink);
+      background: rgba(236, 72, 153, .08);
+    }
+    .btn-fav.faved {
+      color: var(--pink);
+      border-color: var(--pink);
+      background: rgba(236, 72, 153, .1);
+    }
+
+    /* ── EMPTY STATE ────────────────────────────────── */
+    .vacio {
+      text-align: center;
+      padding: 70px 20px;
+      color: var(--text-dim);
+      grid-column: 1/-1;
+    }
+    .vacio .icono {
+      font-size: 56px;
+      display: block;
+      margin-bottom: 14px;
+      opacity: .4;
+    }
+    .vacio h3 {
+      font-size: 19px;
+      color: white;
+      margin-bottom: 6px;
+    }
+    .vacio p {
+      font-size: 13.5px;
+    }
+
+    /* ── CART PANEL ─────────────────────────────────── */
+    .cart-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .6);
+      backdrop-filter: blur(16px);
+      z-index: 300;
+      display: none;
+      animation: overlayIn .3s ease;
+    }
+    .cart-overlay.active {
+      display: block;
+    }
+
+    .cart-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 380px;
+      max-width: 95vw;
+      background: var(--primary-light);
+      border-left: 1px solid var(--glass-border);
+      z-index: 301;
+      display: none;
+      flex-direction: column;
+      box-shadow: -10px 0 60px rgba(0, 0, 0, .5);
+      animation: slideUp .35s ease;
+    }
+
+    .cart-panel.active {
+      display: flex;
+    }
+
+    .cart-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cart-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .cart-close {
+      background: none;
+      border: 1px solid var(--glass-border);
+      color: var(--text-dim);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--ease);
+    }
+    .cart-close:hover {
+      background: rgba(239, 68, 68, .15);
+      border-color: var(--red);
+      color: var(--red);
+      transform: rotate(90deg);
+    }
+
+    .cart-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 24px;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .cart-item-emoji {
+      font-size: 30px;
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, .03);
+      border-radius: 10px;
+      border: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .cart-item-info {
+      flex: 1;
+    }
+    .cart-item-info strong {
+      font-size: 13.5px;
+      font-weight: 600;
+      display: block;
+    }
+    .cart-item-info span {
+      font-size: 11.5px;
+      color: var(--text-dim);
+    }
+
+    .cart-item-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cart-qty-btn {
+      width: 26px;
+      height: 26px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: white;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--ease);
+      font-weight: 700;
+    }
+    .cart-qty-btn:hover {
+      background: rgba(0, 212, 255, .1);
+      border-color: var(--cyan);
+    }
+    .cart-qty {
+      font-size: 14px;
+      font-weight: 700;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .cart-item-remove {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 16px;
+      cursor: pointer;
+      transition: var(--ease);
+      padding: 4px;
+    }
+    .cart-item-remove:hover {
+      color: var(--red);
+    }
+
+    .cart-footer {
+      padding: 20px 24px;
+      border-top: 1px solid var(--glass-border);
+    }
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      font-size: 15px;
+    }
+    .cart-total strong {
+      font-size: 18px;
+      color: var(--cyan);
+      font-weight: 800;
+    }
+
+    .btn-checkout {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
+      color: var(--primary-dark);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--ease);
+    }
+    .btn-checkout:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 36px rgba(0, 212, 255, .25);
+    }
+
+    .btn-clear-cart {
+      width: 100%;
+      padding: 10px;
+      background: transparent;
+      border: 1px solid var(--glass-border);
+      color: var(--text-dim);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--ease);
+      margin-top: 8px;
+    }
+    .btn-clear-cart:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .cart-empty {
+      text-align: center;
+      padding: 50px 20px;
+      color: var(--text-dim);
+    }
+    .cart-empty .e-icon {
+      font-size: 48px;
+      display: block;
+      margin-bottom: 12px;
+      opacity: .4;
+    }
+    .cart-empty p {
+      font-size: 14px;
+    }
+
+    /* ── COMPARISON TABLE ─────────────────────────── */
+    .compare-table-wrap {
+      overflow-x: auto;
+      margin-bottom: 28px;
+    }
+    .compare-table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 500px;
+      font-size: 13.5px;
+    }
+    .compare-table th {
+      background: rgba(0, 212, 255, .06);
+      color: var(--cyan);
+      font-weight: 700;
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--glass-border);
+      white-space: nowrap;
+    }
+    .compare-table td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--glass-border);
+      vertical-align: middle;
+    }
+    .compare-table tr:hover td {
+      background: rgba(255, 255, 255, .02);
+    }
+    .compare-table .price-cell {
+      font-weight: 800;
+      font-size: 15px;
+    }
+    .compare-table .price-best {
+      color: var(--green);
+    }
+    .compare-table .price-worst {
+      color: var(--red);
+    }
+    .compare-table .badge-best {
+      font-size: 10px;
+      background: rgba(16, 185, 129, .15);
+      color: var(--green);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(16, 185, 129, .1);
+      margin-left: 6px;
+    }
+
+    /* ── FAVORITOS SECTION ─────────────────────────── */
+    .favoritos-section {
+      display: none;
+    }
+    .favoritos-section.active {
+      display: block;
+    }
+
+    /* ── MODAL ──────────────────────────────────────── */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, .72);
       backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      z-index: 1000;
+      z-index: 400;
       display: none;
       align-items: center;
       justify-content: center;
       padding: 20px;
-      animation: modalOverlayIn 0.3s ease forwards;
+      animation: overlayIn .3s ease;
     }
 
     .modal-overlay.active {
@@ -1024,326 +1284,355 @@
       background: var(--primary-light);
       border: 1px solid var(--glass-border);
       border-radius: var(--radius);
-      padding: 40px;
-      max-width: 500px;
+      padding: 36px;
+      max-width: 480px;
       width: 100%;
-      max-height: 90vh;
+      max-height: 92vh;
       overflow-y: auto;
-      box-shadow: var(--glass-shadow);
-      animation: modalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .5);
+      animation: modalIn .4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
       position: relative;
     }
 
-    .modal-content .modal-close {
+    .modal-close {
       position: absolute;
-      top: 16px;
-      right: 20px;
+      top: 14px;
+      right: 18px;
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
-      color: var(--text-secondary);
-      width: 36px;
-      height: 36px;
+      color: var(--text-dim);
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
-      font-size: 18px;
+      font-size: 16px;
       cursor: pointer;
-      transition: var(--transition);
+      transition: var(--ease);
       display: flex;
       align-items: center;
       justify-content: center;
     }
-
-    .modal-content .modal-close:hover {
-      background: rgba(239, 68, 68, 0.15);
-      border-color: #ef4444;
-      color: #ef4444;
+    .modal-close:hover {
+      background: rgba(239, 68, 68, .15);
+      border-color: var(--red);
+      color: var(--red);
       transform: rotate(90deg);
     }
 
-    .modal-content .modal-icon {
-      font-size: 48px;
+    .modal-icon {
+      font-size: 46px;
       text-align: center;
-      margin-bottom: 12px;
       display: block;
+      margin-bottom: 10px;
     }
-
     .modal-content h2 {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 700;
       text-align: center;
       margin-bottom: 8px;
-      color: white;
     }
-
-    .modal-content .modal-sub {
-      font-size: 15px;
-      color: var(--text-secondary);
+    .modal-sub {
+      font-size: 14px;
+      color: var(--text-dim);
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       line-height: 1.6;
     }
 
-    .modal-content .modal-details {
+    .modal-badges {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .mbadge {
+      padding: 3px 12px;
+      border-radius: var(--radius-full);
+      font-size: 11.5px;
+      font-weight: 600;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-dim);
+    }
+    .mbadge.oferta {
+      background: rgba(245, 158, 11, .14);
+      border-color: rgba(245, 158, 11, .08);
+      color: var(--amber);
+    }
+    .mbadge.nuevo {
+      background: rgba(0, 212, 255, .08);
+      border-color: rgba(0, 212, 255, .05);
+      color: var(--cyan);
+    }
+
+    .modal-details {
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
       border-radius: var(--radius-sm);
-      padding: 16px 20px;
-      margin-bottom: 20px;
+      padding: 14px 18px;
+      margin-bottom: 18px;
     }
-
-    .modal-content .modal-details .row {
+    .modal-details .row {
       display: flex;
       justify-content: space-between;
       padding: 6px 0;
-      font-size: 14px;
+      font-size: 13.5px;
       border-bottom: 1px solid var(--glass-border);
     }
-
-    .modal-content .modal-details .row:last-child {
+    .modal-details .row:last-child {
       border-bottom: none;
     }
-
-    .modal-content .modal-details .row .label {
-      color: var(--text-secondary);
+    .modal-details .row .label {
+      color: var(--text-dim);
     }
-
-    .modal-content .modal-details .row .value {
+    .modal-details .row .value {
       color: white;
       font-weight: 600;
     }
-
-    .modal-content .modal-details .row .value.price {
-      color: var(--primary-glow);
-      font-size: 18px;
+    .modal-details .row .value.price {
+      color: var(--cyan);
+      font-size: 17px;
     }
 
-    .modal-content .modal-btn {
+    /* price history chart in modal */
+    .price-history {
+      margin-bottom: 18px;
+    }
+    .price-history h4 {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .history-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 50px;
+    }
+    .history-bar {
+      flex: 1;
+      background: linear-gradient(0deg, var(--cyan), var(--violet));
+      border-radius: 4px 4px 0 0;
+      opacity: .7;
+      transition: var(--ease);
+      position: relative;
+      min-height: 6px;
+    }
+    .history-bar:hover {
+      opacity: 1;
+    }
+    .history-bar::after {
+      content: attr(data-label);
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 9px;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+    .history-labels {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .history-label {
+      flex: 1;
+      font-size: 8px;
+      color: var(--text-dim);
+      text-align: center;
+    }
+
+    .modal-btn {
       width: 100%;
-      padding: 14px;
+      padding: 13px;
       border: none;
       border-radius: var(--radius-sm);
-      font-size: 15px;
+      font-size: 14.5px;
       font-weight: 700;
       cursor: pointer;
-      transition: var(--transition);
-      background: linear-gradient(135deg, var(--primary-glow), var(--primary-glow2));
+      transition: var(--ease);
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
       color: var(--primary-dark);
-      box-shadow: 0 4px 30px rgba(0, 212, 255, 0.15);
+      box-shadow: 0 4px 28px rgba(0, 212, 255, .13);
     }
-
-    .modal-content .modal-btn:hover {
+    .modal-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 40px rgba(0, 212, 255, 0.25);
+      box-shadow: 0 8px 40px rgba(0, 212, 255, .25);
     }
-
-    .modal-content .modal-btn.btn-secondary {
+    .modal-btn.btn-secondary {
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
-      color: var(--text-secondary);
-      margin-top: 10px;
+      color: var(--text-dim);
       box-shadow: none;
+      margin-top: 8px;
     }
-
-    .modal-content .modal-btn.btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.05);
+    .modal-btn.btn-secondary:hover {
+      background: rgba(255, 255, 255, .05);
       color: white;
-      transform: translateY(-2px);
     }
 
-    .modal-content .modal-badges {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-bottom: 16px;
-    }
-
-    .modal-content .modal-badges .mbadge {
-      padding: 4px 14px;
-      border-radius: var(--radius-full);
-      font-size: 12px;
-      font-weight: 600;
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      color: var(--text-secondary);
-    }
-
-    .modal-content .modal-badges .mbadge.oferta {
-      background: rgba(245, 158, 11, 0.15);
-      border-color: rgba(245, 158, 11, 0.1);
-      color: var(--accent);
-    }
-
-    .modal-content .modal-badges .mbadge.nuevo {
-      background: rgba(0, 212, 255, 0.1);
-      border-color: rgba(0, 212, 255, 0.05);
-      color: var(--primary-glow);
-    }
-
-    /* ═══════════════════════════════════════════════════════════════
-       FOOTER
-       ═══════════════════════════════════════════════════════════════ */
+    /* ── FOOTER ──────────────────────────────────── */
     footer {
-      background: rgba(10, 14, 26, 0.6);
+      background: rgba(10, 14, 26, .6);
       backdrop-filter: blur(30px);
       border-top: 1px solid var(--glass-border);
-      color: var(--text-secondary);
-      text-align: center;
-      padding: 32px;
-      margin-top: 20px;
-      font-size: 13px;
+      padding: 28px 32px;
+      margin-top: 16px;
     }
-
-    footer .footer-content {
-      max-width: 1280px;
+    .footer-inner {
+      max-width: 1300px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 14px;
+      font-size: 13px;
+      color: var(--text-dim);
     }
-
-    footer strong {
+    .footer-inner strong {
       color: white;
     }
-
-    footer .footer-links {
+    .footer-links {
       display: flex;
-      gap: 20px;
+      gap: 18px;
     }
-
-    footer .footer-links a {
-      color: var(--text-secondary);
+    .footer-links a {
+      color: var(--text-dim);
       text-decoration: none;
-      transition: var(--transition);
       font-size: 13px;
+      transition: var(--ease);
       cursor: pointer;
     }
-
-    footer .footer-links a:hover {
+    .footer-links a:hover {
       color: white;
     }
 
-    /* ═══════════════════════════════════════════════════════════════
-       TOAST
-       ═══════════════════════════════════════════════════════════════ */
-    .toast {
+    /* ── TOAST ──────────────────────────────────────── */
+    .toast-container {
       position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background: var(--glass-bg);
+      bottom: 24px;
+      right: 24px;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-end;
+      pointer-events: none;
+    }
+    .toast {
+      background: rgba(20, 27, 51, .95);
       backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
       border: 1px solid var(--glass-border);
       color: white;
-      padding: 16px 28px;
+      padding: 13px 22px;
       border-radius: var(--radius-sm);
-      font-size: 14px;
-      z-index: 200;
-      transform: translateY(100px) scale(0.9);
-      opacity: 0;
-      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-      max-width: 400px;
-      box-shadow: var(--glass-shadow);
+      font-size: 13.5px;
+      max-width: 360px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .5);
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+      animation: toastIn .4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      pointer-events: auto;
     }
-
-    .toast .toast-icon {
-      font-size: 20px;
-    }
-
-    .toast.visible {
-      transform: translateY(0) scale(1);
-      opacity: 1;
-    }
-
     .toast.error {
-      border-color: #ef4444;
-      background: rgba(239, 68, 68, 0.1);
+      border-color: var(--red);
+      background: rgba(239, 68, 68, .12);
+    }
+    .toast.success {
+      border-color: var(--green);
+      background: rgba(16, 185, 129, .1);
+    }
+    .toast.warning {
+      border-color: var(--amber);
+      background: rgba(245, 158, 11, .1);
+    }
+    .toast-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .toast-dismiss {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 16px;
+      cursor: pointer;
+      margin-left: 8px;
+      padding: 0;
+      line-height: 1;
+      transition: var(--ease);
+    }
+    .toast-dismiss:hover {
+      color: white;
     }
 
-    /* ═══════════════════════════════════════════════════════════════
-       RESPONSIVE
-       ═══════════════════════════════════════════════════════════════ */
-    @media (max-width: 992px) {
-      .grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      }
-    }
-
+    /* ── RESPONSIVE ─────────────────────────────────── */
     @media (max-width: 768px) {
       nav {
         height: auto;
-        padding: 12px 16px;
+        padding: 10px 14px;
         flex-direction: column;
         gap: 8px;
       }
-
       .hero h1 {
-        font-size: 32px;
+        font-size: 30px;
       }
-
-      .hero .chips {
-        gap: 6px;
-      }
-
-      .hero .chips .chip {
-        font-size: 11px;
-        padding: 4px 12px;
-      }
-
       .search-bar {
         flex-direction: column;
       }
-
-      .search-bar .btn-search {
+      .btn-search {
         justify-content: center;
-        padding: 14px;
+        padding: 13px;
       }
-
       .filtros {
         position: static;
-        padding: 12px 16px;
-        gap: 10px;
+        padding: 10px 14px;
       }
-
       .filtros .filtro-group {
         flex: 1;
-        min-width: 100px;
+        min-width: 90px;
       }
-
       .filtros select {
-        min-width: 70px;
+        min-width: 60px;
         font-size: 12px;
-        padding-right: 20px;
       }
-
-      .filtros .btn-comparar {
+      .filtros-right {
         margin-left: 0;
         width: 100%;
+      }
+      .btn-comparar,
+      .btn-favoritos-ver {
+        flex: 1;
         justify-content: center;
       }
-
-      .grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 14px;
+      .price-range-group {
+        display: none;
       }
-
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+      }
       .resultados-info {
         flex-direction: column;
         text-align: center;
-        padding: 12px 16px;
       }
-
       .modal-content {
-        padding: 28px 20px;
+        padding: 24px 18px;
       }
-
-      footer .footer-content {
+      footer .footer-inner {
         flex-direction: column;
         text-align: center;
+      }
+      .hero-stats {
+        gap: 20px;
+      }
+      .cart-panel {
+        width: 100%;
       }
     }
 
@@ -1351,88 +1640,82 @@
       .grid {
         grid-template-columns: 1fr 1fr;
       }
-
       .tarjeta {
-        padding: 14px;
+        padding: 12px;
       }
-
-      .tarjeta .tarjeta-imagen {
+      .tarjeta-imagen {
         height: 70px;
-        font-size: 32px;
+        font-size: 30px;
       }
-
-      .tarjeta .precio {
-        font-size: 18px;
-      }
-
-      .hero h1 {
-        font-size: 26px;
-      }
-
-      .modal-content {
-        padding: 20px 16px;
+      .precio {
+        font-size: 17px;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- ═══════════════════════════════════════════════════════════════
-  NAV
-  ═══════════════════════════════════════════════════════════════ -->
+  <!-- ─── NAV ─────────────────────────────────────────── -->
   <nav>
-    <span class="logo" onclick="location.reload()">✦ MercadosApp <span>beta</span></span>
+    <span class="logo" onclick="location.reload()">
+      ✦ MercadosApp
+      <span class="logo-badge">beta</span>
+    </span>
     <div class="nav-links">
       <a href="#" onclick="location.reload()">⟡ Inicio</a>
-      <a href="#" onclick="scrollToCategories()">📦 Productos</a>
-      <a href="panel.html" class="btn-panel">✦ Panel mercader</a>
+      <a href="#" onclick="scrollToContent()">📦 Productos</a>
+      <button class="cart-btn" onclick="abrirCarrito()" title="Carrito">
+        🛒 Carrito
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+      <a href="panel.html" class="btn-panel">✦ Panel</a>
     </div>
   </nav>
 
-  <!-- ═══════════════════════════════════════════════════════════════
-  HERO
-  ═══════════════════════════════════════════════════════════════ -->
+  <!-- ─── HERO ─────────────────────────────────────────── -->
   <div class="hero">
-    <div class="orb"></div>
-    <div class="orb2"></div>
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
 
-    <h1>
-      Encuentra los <br />
-      <span class="gradient-text">mejores precios</span>
-      <span class="highlight">✦</span>
-    </h1>
-    <p>Compara productos de diferentes mercados en un solo lugar con la mejor experiencia</p>
+    <h1>Encuentra los mejores<br><span class="gradient-text">precios del mercado ✦</span></h1>
+    <p>Compara productos de diferentes mercados en un solo lugar y ahorra dinero con cada compra</p>
+
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num" id="statProductos">0</div>
+        <div class="stat-label">Productos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="statMercados">0</div>
+        <div class="stat-label">Mercados</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="statAhorro">—</div>
+        <div class="stat-label">Ahorro máx.</div>
+      </div>
+    </div>
 
     <div class="search-bar">
       <div class="search-wrapper">
         <span class="search-icon">🔍</span>
-        <input type="text" id="busqueda" placeholder="Buscar productos... Ej: tomate, pollo, leche" />
+        <input type="text" id="busqueda" placeholder="Buscar… tomate, pollo, leche" autocomplete="off" />
+        <button class="search-clear-btn" id="searchClear" onclick="limpiarBusqueda()" title="Limpiar">✕</button>
       </div>
-      <button class="btn-search" onclick="buscar()">
-        <span>✦</span> Buscar
-      </button>
+      <button class="btn-search" onclick="buscar()"><span>✦</span> Buscar</button>
     </div>
 
     <div class="chips">
-      <span class="chip" data-categoria="Frutas" onclick="filtrarPorCategoria('Frutas')"><span class="emoji">🍎</span>
-        Frutas</span>
-      <span class="chip" data-categoria="Verduras" onclick="filtrarPorCategoria('Verduras')"><span class="emoji">🥬</span>
-        Verduras</span>
-      <span class="chip" data-categoria="Carnes" onclick="filtrarPorCategoria('Carnes')"><span class="emoji">🍗</span>
-        Carnes</span>
-      <span class="chip" data-categoria="Lácteos" onclick="filtrarPorCategoria('Lácteos')"><span class="emoji">🥛</span>
-        Lácteos</span>
-      <span class="chip" data-categoria="Granos" onclick="filtrarPorCategoria('Granos')"><span class="emoji">🌾</span>
-        Granos</span>
-      <span class="chip" data-categoria="Bebidas" onclick="filtrarPorCategoria('Bebidas')"><span class="emoji">🧃</span>
-        Bebidas</span>
-      <span class="chip" onclick="limpiarFiltros()"><span class="emoji">✕</span> Limpiar</span>
+      <span class="chip" data-categoria="Frutas" onclick="filtrarChip('Frutas')">🍎 Frutas</span>
+      <span class="chip" data-categoria="Verduras" onclick="filtrarChip('Verduras')">🥬 Verduras</span>
+      <span class="chip" data-categoria="Carnes" onclick="filtrarChip('Carnes')">🍗 Carnes</span>
+      <span class="chip" data-categoria="Lácteos" onclick="filtrarChip('Lácteos')">🥛 Lácteos</span>
+      <span class="chip" data-categoria="Granos" onclick="filtrarChip('Granos')">🌾 Granos</span>
+      <span class="chip" data-categoria="Bebidas" onclick="filtrarChip('Bebidas')">🧃 Bebidas</span>
+      <span class="chip" onclick="limpiarFiltros()">✕ Limpiar</span>
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════════════════════════════════
-  FILTROS
-  ═══════════════════════════════════════════════════════════════ -->
+  <!-- ─── FILTER BAR ────────────────────────────────────── -->
   <div class="filtros" id="filtrosBar">
     <div class="filtro-group">
       <label>📍</label>
@@ -1461,293 +1744,461 @@
         <option value="precio_asc">💰 Menor precio</option>
         <option value="precio_desc">💰 Mayor precio</option>
         <option value="reciente">🕐 Más recientes</option>
-        <option value="nombre">🔤 A-Z</option>
+        <option value="nombre">🔤 A–Z</option>
       </select>
     </div>
 
-    <button class="btn-comparar" id="btnComparar" onclick="compararTodos()">
-      ⟳ Comparar todos
-    </button>
+    <div class="price-range-group">
+      <label>💲 Precio máx.</label>
+      <input type="range" id="precioMax" min="0" max="50000" step="500" value="50000" oninput="actualizarPrecioMax()" />
+      <span class="price-label" id="precioMaxLabel">Sin límite</span>
+    </div>
+
+    <div class="filtros-right">
+      <button class="btn-favoritos-ver" id="btnFavoritos" onclick="toggleFavoritos()">❤️ Favoritos <span id="favCount"></span></button>
+      <button class="btn-comparar" id="btnComparar" onclick="toggleComparar()">⟳ Comparar</button>
+    </div>
   </div>
 
-  <!-- ═══════════════════════════════════════════════════════════════
-  CONTENIDO
-  ═══════════════════════════════════════════════════════════════ -->
+  <!-- ─── CONTENT ──────────────────────────────────────── -->
   <div class="contenido" id="contenidoPrincipal">
     <div class="resultados-info" id="info">
-      <span>✦ Cargando productos...</span>
-      <span class="badge-cantidad" id="total-productos">0</span>
+      <span>✦ Cargando productos…</span>
+      <span class="badge-count" id="totalProductos">0</span>
     </div>
+
+    <!-- Favoritos section -->
+    <div class="favoritos-section" id="favoritosSection">
+      <div class="categoria-header" style="margin-bottom:16px">
+        <span class="icono">❤️</span>
+        <h2>Mis Favoritos</h2>
+        <span class="count" id="favSectionCount">0</span>
+      </div>
+      <div class="grid" id="favGrid"></div>
+      <div style="border-bottom: 1px solid var(--glass-border); margin: 32px 0;"></div>
+    </div>
+
     <div id="resultados"></div>
   </div>
 
-  <!-- ═══════════════════════════════════════════════════════════════
-  FOOTER
-  ═══════════════════════════════════════════════════════════════ -->
-  <footer>
-    <div class="footer-content">
-      <span><strong>✦ MercadosApp</strong> — Conectando compradores con los mejores precios</span>
-      <div class="footer-links">
-        <a href="#" onclick="location.reload()">Inicio</a>
-        <a href="panel.html">Panel mercader</a>
-        <a href="#" onclick="abrirModalAyuda()">Ayuda</a>
-      </div>
+  <!-- ─── CART OVERLAY & PANEL ──────────────────────────── -->
+  <div class="cart-overlay" id="cartOverlay" onclick="cerrarCarrito()"></div>
+  <div class="cart-panel" id="cartPanel">
+    <div class="cart-header">
+      <h2>🛒 Carrito de compras</h2>
+      <button class="cart-close" onclick="cerrarCarrito()">✕</button>
     </div>
-  </footer>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer" id="cartFooter"></div>
+  </div>
 
-  <!-- ═══════════════════════════════════════════════════════════════
-  MODAL (VENTANA EMERGENTE)
-  ═══════════════════════════════════════════════════════════════ -->
+  <!-- ─── MODAL ────────────────────────────────────────── -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-content">
       <button class="modal-close" onclick="cerrarModal()">✕</button>
       <span class="modal-icon" id="modalIcon">🛒</span>
-      <h2 id="modalTitle">Detalle del producto</h2>
-      <p class="modal-sub" id="modalSub">Información completa del producto seleccionado</p>
-
+      <h2 id="modalTitle">Detalle</h2>
+      <p class="modal-sub" id="modalSub"></p>
       <div class="modal-badges" id="modalBadges"></div>
-
-      <div class="modal-details" id="modalDetails">
-        <div class="row">
-          <span class="label">Producto</span>
-          <span class="value" id="modalProductoNombre">—</span>
-        </div>
-        <div class="row">
-          <span class="label">Mercado</span>
-          <span class="value" id="modalMercadoNombre">—</span>
-        </div>
-        <div class="row">
-          <span class="label">Categoría</span>
-          <span class="value" id="modalCategoriaNombre">—</span>
-        </div>
-        <div class="row">
-          <span class="label">Precio</span>
-          <span class="value price" id="modalPrecioValor">—</span>
-        </div>
-        <div class="row">
-          <span class="label">Unidad</span>
-          <span class="value" id="modalUnidadValor">—</span>
-        </div>
-        <div class="row">
-          <span class="label">Actualizado</span>
-          <span class="value" id="modalFechaValor">—</span>
-        </div>
-      </div>
-
-      <button class="modal-btn" id="modalBtnPrincipal" onclick="cerrarModal()">
-        ✦ Entendido
-      </button>
-      <button class="modal-btn btn-secondary" onclick="cerrarModal()">
-        Cerrar
-      </button>
+      <div class="modal-details" id="modalDetails"></div>
+      <div class="price-history" id="priceHistory"></div>
+      <button class="modal-btn" id="modalBtnAdd">🛒 Agregar al carrito</button>
+      <button class="modal-btn btn-secondary" onclick="cerrarModal()">Cerrar</button>
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════════════════════════════════
-  TOAST
-  ═══════════════════════════════════════════════════════════════ -->
-  <div class="toast" id="toast">
-    <span class="toast-icon">✦</span>
-    <span id="toast-message">Mensaje</span>
-  </div>
+  <!-- ─── TOAST CONTAINER ──────────────────────────────── -->
+  <div class="toast-container" id="toastContainer"></div>
 
-  <!-- ═══════════════════════════════════════════════════════════════
-  JAVASCRIPT
-  ═══════════════════════════════════════════════════════════════ -->
+  <!-- ─── FOOTER ───────────────────────────────────────── -->
+  <footer>
+    <div class="footer-inner">
+      <span><strong>✦ MercadosApp</strong> — Conectando compradores con los mejores precios</span>
+      <div class="footer-links">
+        <a onclick="location.reload()">Inicio</a>
+        <a href="panel.html">Panel mercader</a>
+        <a onclick="abrirModalAyuda()">Ayuda</a>
+      </div>
+    </div>
+  </footer>
+
   <script>
-    // ═══════════════════════════════════════════════════════════════════
-    //  DATOS INICIALES
-    // ═══════════════════════════════════════════════════════════════════
-
+    // ══════════════════════════════════════════════════════════
+    //  DATOS
+    // ══════════════════════════════════════════════════════════
     function inicializarDatos() {
-      if (localStorage.getItem('mercadosapp_init')) return;
+      if (localStorage.getItem('mapp_init')) return;
 
       const mercados = [
         { id: 'm1', nombre: 'Mercado Central', direccion: 'Calle 10 # 5-23' },
         { id: 'm2', nombre: 'La Placita Verde', direccion: 'Av. 15 # 8-40' },
+        { id: 'm3', nombre: 'Mercado Norte', direccion: 'Cra. 20 # 3-10' },
       ];
+
+      const hoy = new Date().toISOString();
+      const ayer = new Date(Date.now() - 90000000).toISOString();
 
       const productos = [
-        { id: 'p1', nombre: 'Tomate chonto', categoria: 'Verduras', unidad: 'kg', precio: 2800, precioBase: 2800,
-          mercadoId: 'm1', oferta: null, emoji: '🍅', fecha: new Date().toISOString(), activo: true },
-        { id: 'p2', nombre: 'Papa criolla', categoria: 'Verduras', unidad: 'kg', precio: 1900, precioBase: 1900,
-          mercadoId: 'm1', oferta: '20% descuento', emoji: '🥔', fecha: new Date().toISOString(), activo: true },
-        { id: 'p3', nombre: 'Pechuga pollo', categoria: 'Carnes', unidad: 'kg', precio: 12000, precioBase: 12000,
-          mercadoId: 'm2', oferta: null, emoji: '🍗', fecha: new Date().toISOString(), activo: true },
-        { id: 'p4', nombre: 'Manzana roja', categoria: 'Frutas', unidad: 'kg', precio: 5000, precioBase: 5000,
-          mercadoId: 'm1', oferta: null, emoji: '🍎', fecha: new Date().toISOString(), activo: true },
-        { id: 'p5', nombre: 'Leche entera', categoria: 'Lácteos', unidad: 'litro', precio: 2200, precioBase: 2200,
-          mercadoId: 'm2', oferta: '2x1', emoji: '🥛', fecha: new Date().toISOString(), activo: true },
-        { id: 'p6', nombre: 'Arroz blanco', categoria: 'Granos', unidad: 'kg', precio: 3200, precioBase: 3200,
-          mercadoId: 'm1', oferta: null, emoji: '🌾', fecha: new Date().toISOString(), activo: true },
-        { id: 'p7', nombre: 'Huevos AA', categoria: 'Lácteos', unidad: 'docena', precio: 13000, precioBase: 13000,
-          mercadoId: 'm2', oferta: null, emoji: '🥚', fecha: new Date().toISOString(), activo: true },
-        { id: 'p8', nombre: 'Aguacate Hass', categoria: 'Frutas', unidad: 'unidad', precio: 1500, precioBase: 1500,
-          mercadoId: 'm1', oferta: null, emoji: '🥑', fecha: new Date().toISOString(), activo: true },
-        { id: 'p9', nombre: 'Pan integral', categoria: 'Otros', unidad: 'unidad', precio: 3200, precioBase: 3200,
-          mercadoId: 'm2', oferta: null, emoji: '🍞', fecha: new Date().toISOString(), activo: true },
-        { id: 'p10', nombre: 'Jugo de naranja', categoria: 'Bebidas', unidad: 'litro', precio: 4500, precioBase: 4500,
-          mercadoId: 'm1', oferta: null, emoji: '🧃', fecha: new Date().toISOString(), activo: true },
+        { id: 'p1', nombre: 'Tomate chonto', categoria: 'Verduras', unidad: 'kg', precio: 2800, mercadoId: 'm1',
+          oferta: null, emoji: '🍅', fecha: hoy, activo: true, historial: [3200, 3000, 2900, 2800] },
+        { id: 'p2', nombre: 'Papa criolla', categoria: 'Verduras', unidad: 'kg', precio: 1900, mercadoId: 'm1',
+          oferta: '20% desc.', emoji: '🥔', fecha: hoy, activo: true, historial: [2200, 2100, 2000, 1900] },
+        { id: 'p3', nombre: 'Pechuga pollo', categoria: 'Carnes', unidad: 'kg', precio: 12000, mercadoId: 'm2',
+          oferta: null, emoji: '🍗', fecha: ayer, activo: true, historial: [11500, 12000, 11800, 12000] },
+        { id: 'p4', nombre: 'Manzana roja', categoria: 'Frutas', unidad: 'kg', precio: 5000, mercadoId: 'm1',
+          oferta: null, emoji: '🍎', fecha: ayer, activo: true, historial: [4800, 4900, 5100, 5000] },
+        { id: 'p5', nombre: 'Leche entera', categoria: 'Lácteos', unidad: 'litro', precio: 2200, mercadoId: 'm2',
+          oferta: '2x1', emoji: '🥛', fecha: hoy, activo: true, historial: [2200, 2200, 2300, 2200] },
+        { id: 'p6', nombre: 'Arroz blanco', categoria: 'Granos', unidad: 'kg', precio: 3200, mercadoId: 'm1',
+          oferta: null, emoji: '🌾', fecha: ayer, activo: true, historial: [3500, 3400, 3300, 3200] },
+        { id: 'p7', nombre: 'Huevos AA', categoria: 'Lácteos', unidad: 'docena', precio: 13000, mercadoId: 'm2',
+          oferta: null, emoji: '🥚', fecha: ayer, activo: true, historial: [12000, 12500, 13000, 13000] },
+        { id: 'p8', nombre: 'Aguacate Hass', categoria: 'Frutas', unidad: 'unidad', precio: 1500, mercadoId: 'm3',
+          oferta: null, emoji: '🥑', fecha: hoy, activo: true, historial: [1800, 1700, 1600, 1500] },
+        { id: 'p9', nombre: 'Pan integral', categoria: 'Otros', unidad: 'unidad', precio: 3200, mercadoId: 'm2',
+          oferta: null, emoji: '🍞', fecha: ayer, activo: true, historial: [3000, 3100, 3200, 3200] },
+        { id: 'p10', nombre: 'Jugo de naranja', categoria: 'Bebidas', unidad: 'litro', precio: 4500, mercadoId: 'm3',
+          oferta: null, emoji: '🧃', fecha: hoy, activo: true, historial: [4800, 4600, 4500, 4500] },
+        { id: 'p11', nombre: 'Cebolla cabezona', categoria: 'Verduras', unidad: 'kg', precio: 1600, mercadoId: 'm3',
+          oferta: '10% desc.', emoji: '🧅', fecha: hoy, activo: true, historial: [1800, 1700, 1650, 1600] },
+        { id: 'p12', nombre: 'Plátano maduro', categoria: 'Frutas', unidad: 'kg', precio: 1200, mercadoId: 'm1',
+          oferta: null, emoji: '🍌', fecha: hoy, activo: true, historial: [1100, 1150, 1200, 1200] },
+        { id: 'p13', nombre: 'Lomo de res', categoria: 'Carnes', unidad: 'kg', precio: 28000, mercadoId: 'm2',
+          oferta: null, emoji: '🥩', fecha: ayer, activo: true, historial: [27000, 27500, 28000, 28000] },
+        { id: 'p14', nombre: 'Queso campesino', categoria: 'Lácteos', unidad: 'kg', precio: 18000, mercadoId: 'm3',
+          oferta: 'Precio especial', emoji: '🧀', fecha: hoy, activo: true, historial: [20000, 19000, 18500, 18000] },
+        { id: 'p15', nombre: 'Agua mineral', categoria: 'Bebidas', unidad: 'litro', precio: 1800, mercadoId: 'm1',
+          oferta: null, emoji: '💧', fecha: ayer, activo: true, historial: [1800, 1800, 1800, 1800] },
       ];
 
-      localStorage.setItem('mercadosapp_mercados', JSON.stringify(mercados));
-      localStorage.setItem('mercadosapp_productos', JSON.stringify(productos));
-      localStorage.setItem('mercadosapp_usuarios', JSON.stringify([]));
-      localStorage.setItem('mercadosapp_init', '1');
-
-      console.log('✦ Datos iniciales cargados');
+      localStorage.setItem('mapp_mercados', JSON.stringify(mercados));
+      localStorage.setItem('mapp_productos', JSON.stringify(productos));
+      localStorage.setItem('mapp_favoritos', JSON.stringify([]));
+      localStorage.setItem('mapp_carrito', JSON.stringify([]));
+      localStorage.setItem('mapp_init', '1');
     }
 
-    // ═══════════════════════════════════════════════════════════════════
-    //  FUNCIONES DE DATOS
-    // ═══════════════════════════════════════════════════════════════════
+    function getMercados() { return JSON.parse(localStorage.getItem('mapp_mercados') || '[]'); }
 
-    function obtenerMercados() {
-      return JSON.parse(localStorage.getItem('mercadosapp_mercados') || '[]');
+    function getProductos() { return JSON.parse(localStorage.getItem('mapp_productos') || '[]').filter(p => p.activo !== false); }
+
+    // ══════════════════════════════════════════════════════════
+    //  CARRITO
+    // ══════════════════════════════════════════════════════════
+    let carrito = JSON.parse(localStorage.getItem('mapp_carrito') || '[]');
+
+    function guardarCarrito() { localStorage.setItem('mapp_carrito', JSON.stringify(carrito)); }
+
+    function agregarAlCarrito(producto) {
+      const idx = carrito.findIndex(i => i.id === producto.id);
+      if (idx >= 0) {
+        carrito[idx].cantidad++;
+      } else {
+        carrito.push({ ...producto, cantidad: 1 });
+      }
+      guardarCarrito();
+      actualizarCartBadge();
+      toast('🛒 ' + producto.nombre + ' agregado al carrito', 'success');
     }
 
-    function obtenerProductos() {
-      return JSON.parse(localStorage.getItem('mercadosapp_productos') || '[]');
+    function actualizarCartBadge() {
+      const total = carrito.reduce((s, i) => s + i.cantidad, 0);
+      const badge = document.getElementById('cartCount');
+      if (badge) {
+        badge.textContent = total;
+        badge.style.display = total > 0 ? 'flex' : 'none';
+      }
     }
 
-    function getProductosActivos() {
-      return obtenerProductos().filter(p => p.activo !== false);
+    function abrirCarrito() {
+      document.getElementById('cartOverlay').classList.add('active');
+      document.getElementById('cartPanel').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      renderCarrito();
     }
 
-    // ═══════════════════════════════════════════════════════════════════
+    function cerrarCarrito() {
+      document.getElementById('cartOverlay').classList.remove('active');
+      document.getElementById('cartPanel').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function cambiarCantidad(id, delta) {
+      const idx = carrito.findIndex(i => i.id === id);
+      if (idx < 0) return;
+      carrito[idx].cantidad += delta;
+      if (carrito[idx].cantidad <= 0) carrito.splice(idx, 1);
+      guardarCarrito();
+      actualizarCartBadge();
+      renderCarrito();
+    }
+
+    function eliminarDelCarrito(id) {
+      carrito = carrito.filter(i => i.id !== id);
+      guardarCarrito();
+      actualizarCartBadge();
+      renderCarrito();
+    }
+
+    function vaciarCarrito() {
+      if (!confirm('¿Vaciar el carrito?')) return;
+      carrito = [];
+      guardarCarrito();
+      actualizarCartBadge();
+      renderCarrito();
+    }
+
+    function renderCarrito() {
+      const itemsEl = document.getElementById('cartItems');
+      const footerEl = document.getElementById('cartFooter');
+
+      if (carrito.length === 0) {
+        itemsEl.innerHTML =
+          `<div class="cart-empty"><span class="e-icon">🛒</span><p>Tu carrito está vacío.<br>¡Agrega productos para empezar!</p></div>`;
+        footerEl.innerHTML = '';
+        return;
+      }
+
+      const total = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
+
+      itemsEl.innerHTML = carrito.map(item => `
+          <div class="cart-item">
+            <div class="cart-item-emoji">${item.emoji || '📦'}</div>
+            <div class="cart-item-info">
+              <strong>${item.nombre}</strong>
+              <span>$${Number(item.precio).toLocaleString('es-CO')} / ${item.unidad}</span>
+            </div>
+            <div class="cart-item-controls">
+              <button class="cart-qty-btn" onclick="cambiarCantidad('${item.id}', -1)">−</button>
+              <span class="cart-qty">${item.cantidad}</span>
+              <button class="cart-qty-btn" onclick="cambiarCantidad('${item.id}', 1)">+</button>
+            </div>
+            <button class="cart-item-remove" onclick="eliminarDelCarrito('${item.id}')" title="Eliminar">✕</button>
+          </div>
+        `).join('');
+
+      footerEl.innerHTML = `
+          <div class="cart-total">
+            <span>Total (${carrito.reduce((s,i)=>s+i.cantidad,0)} items)</span>
+            <strong>$${total.toLocaleString('es-CO')}</strong>
+          </div>
+          <button class="btn-checkout" onclick="checkout()">✦ Finalizar compra</button>
+          <button class="btn-clear-cart" onclick="vaciarCarrito()">Vaciar carrito</button>
+        `;
+    }
+
+    function checkout() {
+      toast('✦ ¡Pedido enviado! Pronto te contactaremos.', 'success');
+      carrito = [];
+      guardarCarrito();
+      actualizarCartBadge();
+      renderCarrito();
+      cerrarCarrito();
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  FAVORITOS
+    // ══════════════════════════════════════════════════════════
+    let favoritos = JSON.parse(localStorage.getItem('mapp_favoritos') || '[]');
+    let mostrandoFavoritos = false;
+
+    function guardarFavoritos() { localStorage.setItem('mapp_favoritos', JSON.stringify(favoritos)); }
+
+    function toggleFavorito(id, e) {
+      if (e) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+      const idx = favoritos.indexOf(id);
+      if (idx >= 0) {
+        favoritos.splice(idx, 1);
+        toast('❤️ Eliminado de favoritos', 'warning');
+      } else {
+        favoritos.push(id);
+        toast('❤️ Guardado en favoritos', 'success');
+      }
+      guardarFavoritos();
+      actualizarFavBadge();
+      buscar();
+    }
+
+    function actualizarFavBadge() {
+      const el = document.getElementById('favCount');
+      if (el) el.textContent = favoritos.length > 0 ? `(${favoritos.length})` : '';
+      const el2 = document.getElementById('favSectionCount');
+      if (el2) el2.textContent = favoritos.length;
+    }
+
+    function toggleFavoritos() {
+      mostrandoFavoritos = !mostrandoFavoritos;
+      const secEl = document.getElementById('favoritosSection');
+      const btn = document.getElementById('btnFavoritos');
+      secEl.classList.toggle('active', mostrandoFavoritos);
+      btn.style.borderColor = mostrandoFavoritos ? 'var(--pink)' : '';
+      btn.style.color = mostrandoFavoritos ? 'var(--pink)' : '';
+      if (mostrandoFavoritos) renderFavoritos();
+    }
+
+    function renderFavoritos() {
+      const productos = getProductos();
+      const mercados = getMercados();
+      const items = productos.filter(p => favoritos.includes(p.id));
+      const grid = document.getElementById('favGrid');
+
+      if (items.length === 0) {
+        grid.innerHTML =
+          '<p style="color:var(--text-dim);padding:16px 0;">No tienes favoritos aún. Haz clic en ❤️ para guardar productos.</p>';
+        return;
+      }
+
+      grid.innerHTML = items.map(p => {
+        const m = mercados.find(x => x.id === p.mercadoId) || { nombre: 'Mercado' };
+        return crearTarjetaHTML(p, m, true);
+      }).join('');
+    }
+
+    // ══════════════════════════════════════════════════════════
     //  TOAST
-    // ═══════════════════════════════════════════════════════════════════
-
-    function toast(msg, error = false) {
-      const el = document.getElementById('toast');
-      const icon = el.querySelector('.toast-icon');
-      const message = document.getElementById('toast-message');
-      icon.textContent = error ? '⚠️' : '✦';
-      message.textContent = msg;
-      el.className = 'toast visible' + (error ? ' error' : '');
-      clearTimeout(el._timeout);
-      el._timeout = setTimeout(() => el.className = 'toast', 3500);
+    // ══════════════════════════════════════════════════════════
+    function toast(msg, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const icons = { info: '✦', success: '✅', error: '⚠️', warning: '⚡' };
+      const div = document.createElement('div');
+      div.className = 'toast ' + (type !== 'info' ? type : '');
+      div.innerHTML = `
+          <span class="toast-icon">${icons[type] || '✦'}</span>
+          <span style="flex:1">${msg}</span>
+          <button class="toast-dismiss" onclick="this.parentElement.remove()">✕</button>
+        `;
+      container.appendChild(div);
+      setTimeout(() => div.remove(), 3800);
     }
 
-    // ═══════════════════════════════════════════════════════════════════
-    //  MODAL (VENTANA EMERGENTE)
-    // ═══════════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════
+    //  MODAL
+    // ══════════════════════════════════════════════════════════
+    let modalProducto = null;
 
     function abrirModal(producto) {
-      const overlay = document.getElementById('modalOverlay');
-      const mercados = obtenerMercados();
+      modalProducto = producto;
+      const mercados = getMercados();
       const m = mercados.find(x => x.id === producto.mercadoId) || { nombre: 'Mercado desconocido' };
-
       const esNuevo = (new Date() - new Date(producto.fecha)) < 86400000;
 
       document.getElementById('modalIcon').textContent = producto.emoji || '🛒';
       document.getElementById('modalTitle').textContent = producto.nombre;
-      document.getElementById('modalSub').textContent = 'Información completa del producto';
+      document.getElementById('modalSub').textContent = m.nombre + ' · ' + (producto.categoria || 'Sin categoría');
 
-      // Badges
-      let badgesHtml = '';
-      if (producto.oferta) {
-        badgesHtml += '<span class="mbadge oferta">🏷️ ' + producto.oferta + '</span>';
-      }
-      if (esNuevo) {
-        badgesHtml += '<span class="mbadge nuevo">✦ Nuevo</span>';
-      }
-      if (!badgesHtml) {
-        badgesHtml = '<span class="mbadge">✦ Disponible</span>';
-      }
-      document.getElementById('modalBadges').innerHTML = badgesHtml;
+      let badges = '';
+      if (producto.oferta) badges += `<span class="mbadge oferta">🏷️ ${producto.oferta}</span>`;
+      if (esNuevo) badges += `<span class="mbadge nuevo">✦ Nuevo</span>`;
+      if (!badges) badges = `<span class="mbadge">✦ Disponible</span>`;
+      document.getElementById('modalBadges').innerHTML = badges;
 
-      // Detalles
-      document.getElementById('modalProductoNombre').textContent = producto.nombre;
-      document.getElementById('modalMercadoNombre').textContent = m.nombre;
-      document.getElementById('modalCategoriaNombre').textContent = producto.categoria || 'Sin categoría';
-      document.getElementById('modalPrecioValor').textContent = '$' + Number(producto.precio).toLocaleString('es-CO');
-      document.getElementById('modalUnidadValor').textContent = producto.unidad || '—';
-      document.getElementById('modalFechaValor').textContent = new Date(producto.fecha).toLocaleDateString('es-ES', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      });
+      const hist = producto.historial || [producto.precio, producto.precio, producto.precio, producto.precio];
+      const maxH = Math.max(...hist);
+      const labels = ['Hace 3s', 'Hace 2s', 'Hace 1s', 'Actual'];
 
-      overlay.classList.add('active');
+      document.getElementById('modalDetails').innerHTML = `
+          <div class="row"><span class="label">Producto</span><span class="value">${producto.nombre}</span></div>
+          <div class="row"><span class="label">Mercado</span><span class="value">${m.nombre}</span></div>
+          <div class="row"><span class="label">Categoría</span><span class="value">${producto.categoria || '—'}</span></div>
+          <div class="row"><span class="label">Precio</span><span class="value price">$${Number(producto.precio).toLocaleString('es-CO')}</span></div>
+          <div class="row"><span class="label">Unidad</span><span class="value">${producto.unidad || '—'}</span></div>
+          <div class="row"><span class="label">Actualizado</span><span class="value">${new Date(producto.fecha).toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'})}</span></div>
+        `;
+
+      document.getElementById('priceHistory').innerHTML = `
+          <h4>📈 Historial de precios</h4>
+          <div class="history-bars">
+            ${hist.map((v) => {
+              const pct = Math.round((v / maxH) * 100);
+              return `<div class="history-bar" style="height:${pct}%;--w:${pct}%" data-label="$${Number(v).toLocaleString('es-CO')}"></div>`;
+            }).join('')}
+          </div>
+          <div class="history-labels">${labels.map(l => `<span class="history-label">${l}</span>`).join('')}</div>
+        `;
+
+      const btnAdd = document.getElementById('modalBtnAdd');
+      btnAdd.onclick = () => { agregarAlCarrito(producto);
+        cerrarModal(); };
+      btnAdd.textContent = '🛒 Agregar al carrito';
+
+      document.getElementById('modalOverlay').classList.add('active');
       document.body.style.overflow = 'hidden';
     }
 
     function abrirModalAyuda() {
-      const overlay = document.getElementById('modalOverlay');
-
+      modalProducto = null;
       document.getElementById('modalIcon').textContent = '❓';
       document.getElementById('modalTitle').textContent = 'Ayuda';
       document.getElementById('modalSub').textContent = 'Cómo usar MercadosApp';
-
       document.getElementById('modalBadges').innerHTML = '';
-
-      document.getElementById('modalProductoNombre').textContent = '—';
-      document.getElementById('modalMercadoNombre').textContent = '—';
-      document.getElementById('modalCategoriaNombre').textContent = '—';
-      document.getElementById('modalPrecioValor').textContent = '—';
-      document.getElementById('modalUnidadValor').textContent = '—';
-      document.getElementById('modalFechaValor').textContent = '—';
-
-      // Reemplazar detalles con información de ayuda
-      const details = document.getElementById('modalDetails');
-      details.innerHTML = `
-            <div class="row"><span class="label">🔍 Buscar</span><span class="value">Usa la barra de búsqueda para encontrar productos</span></div>
-            <div class="row"><span class="label">📂 Filtrar</span><span class="value">Usa los filtros para refinar tu búsqueda</span></div>
-            <div class="row"><span class="label">🏷️ Ofertas</span><span class="value">Los productos con oferta tienen una etiqueta especial</span></div>
-            <div class="row"><span class="label">📦 Productos</span><span class="value">Haz clic en cualquier producto para ver detalles</span></div>
-            <div class="row"><span class="label">✦ Mercader</span><span class="value">Usa el panel mercader para gestionar tu mercado</span></div>
-          `;
-
-      document.getElementById('modalBtnPrincipal').textContent = '✦ Entendido';
-
-      overlay.classList.add('active');
+      document.getElementById('priceHistory').innerHTML = '';
+      document.getElementById('modalDetails').innerHTML = `
+          <div class="row"><span class="label">🔍 Buscar</span><span class="value">Usa la barra para encontrar productos</span></div>
+          <div class="row"><span class="label">📂 Filtrar</span><span class="value">Refina por mercado, categoría o precio</span></div>
+          <div class="row"><span class="label">❤️ Favoritos</span><span class="value">Guarda productos con el botón ❤️</span></div>
+          <div class="row"><span class="label">🛒 Carrito</span><span class="value">Agrega productos y finaliza tu compra</span></div>
+          <div class="row"><span class="label">⟳ Comparar</span><span class="value">Activa el modo comparar para ver todos los mercados</span></div>
+          <div class="row"><span class="label">✦ Mercader</span><span class="value">Gestiona tu mercado en el Panel</span></div>
+        `;
+      document.getElementById('modalBtnAdd').onclick = cerrarModal;
+      document.getElementById('modalBtnAdd').textContent = '✦ Entendido';
+      document.getElementById('modalOverlay').classList.add('active');
       document.body.style.overflow = 'hidden';
     }
 
     function cerrarModal() {
-      const overlay = document.getElementById('modalOverlay');
-      overlay.classList.remove('active');
+      document.getElementById('modalOverlay').classList.remove('active');
       document.body.style.overflow = '';
-      // Restaurar detalles (se volverán a llenar al abrir)
-      const details = document.getElementById('modalDetails');
-      details.innerHTML = `
-            <div class="row"><span class="label">Producto</span><span class="value" id="modalProductoNombre">—</span></div>
-            <div class="row"><span class="label">Mercado</span><span class="value" id="modalMercadoNombre">—</span></div>
-            <div class="row"><span class="label">Categoría</span><span class="value" id="modalCategoriaNombre">—</span></div>
-            <div class="row"><span class="label">Precio</span><span class="value price" id="modalPrecioValor">—</span></div>
-            <div class="row"><span class="label">Unidad</span><span class="value" id="modalUnidadValor">—</span></div>
-            <div class="row"><span class="label">Actualizado</span><span class="value" id="modalFechaValor">—</span></div>
-          `;
-      document.getElementById('modalBtnPrincipal').textContent = '✦ Entendido';
     }
 
-    // Cerrar modal con ESC
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') cerrarModal();
-    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { cerrarModal();
+        cerrarCarrito(); } });
+    document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) cerrarModal(); });
 
-    // Cerrar modal al hacer clic fuera
-    document.getElementById('modalOverlay').addEventListener('click', function(e) {
-      if (e.target === this) cerrarModal();
-    });
+    // ══════════════════════════════════════════════════════════
+    //  PRECIO MAX SLIDER
+    // ══════════════════════════════════════════════════════════
+    function actualizarPrecioMax() {
+      const val = parseInt(document.getElementById('precioMax').value);
+      const label = document.getElementById('precioMaxLabel');
+      label.textContent = val >= 50000 ? 'Sin límite' : '$' + val.toLocaleString('es-CO');
+      buscar();
+    }
 
-    // ═══════════════════════════════════════════════════════════════════
-    //  FUNCIONES DE NAVEGACIÓN
-    // ═══════════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════
+    //  FILTROS Y BUSQUEDA
+    // ══════════════════════════════════════════════════════════
+    function cargarMercadosFiltro() {
+      const select = document.getElementById('filtroMercado');
+      select.innerHTML = '<option value="">✦ Todos</option>';
+      getMercados().forEach(m => {
+        const o = document.createElement('option');
+        o.value = m.id;
+        o.textContent = m.nombre;
+        select.appendChild(o);
+      });
+    }
 
-    function scrollToCategories() {
+    function scrollToContent() {
       document.getElementById('contenidoPrincipal').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    function filtrarPorCategoria(categoria) {
+    function filtrarChip(categoria) {
       document.getElementById('filtroCategoria').value = categoria;
-      // Marcar chip activo
-      document.querySelectorAll('.chips .chip').forEach(c => c.classList.remove('active'));
-      document.querySelector(`.chips .chip[data-categoria="${categoria}"]`)?.classList.add('active');
+      document.querySelectorAll('.chip[data-categoria]').forEach(c => c.classList.remove('active'));
+      document.querySelector(`.chip[data-categoria="${categoria}"]`)?.classList.add('active');
       buscar();
-      setTimeout(scrollToCategories, 300);
-      toast('✦ Filtrando por: ' + categoria);
+      setTimeout(scrollToContent, 300);
+      toast('✦ Filtrando: ' + categoria);
+    }
+
+    function limpiarBusqueda() {
+      document.getElementById('busqueda').value = '';
+      document.getElementById('searchClear').style.display = 'none';
+      buscar();
     }
 
     function limpiarFiltros() {
@@ -1755,32 +2206,24 @@
       document.getElementById('filtroMercado').value = '';
       document.getElementById('filtroCategoria').value = '';
       document.getElementById('orden').value = 'precio_asc';
-      document.querySelectorAll('.chips .chip').forEach(c => c.classList.remove('active'));
-
-      if (modoComparar) {
-        const btn = document.getElementById('btnComparar');
-        modoComparar = false;
-        btn.classList.remove('activo');
-        btn.textContent = '⟳ Comparar todos';
-      }
+      document.getElementById('precioMax').value = 50000;
+      document.getElementById('precioMaxLabel').textContent = 'Sin límite';
+      document.getElementById('searchClear').style.display = 'none';
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      if (modoComparar) toggleComparar();
       buscar();
       toast('✦ Filtros limpiados');
     }
 
-    // ═══════════════════════════════════════════════════════════════════
-    //  BUSCADOR Y FILTROS
-    // ═══════════════════════════════════════════════════════════════════
+    let modoComparar = false;
 
-    function cargarMercadosFiltro() {
-      const mercados = obtenerMercados();
-      const select = document.getElementById('filtroMercado');
-      select.innerHTML = '<option value="">✦ Todos</option>';
-      mercados.forEach(m => {
-        const opt = document.createElement('option');
-        opt.value = m.id;
-        opt.textContent = m.nombre;
-        select.appendChild(opt);
-      });
+    function toggleComparar() {
+      const btn = document.getElementById('btnComparar');
+      modoComparar = !modoComparar;
+      btn.classList.toggle('activo', modoComparar);
+      btn.textContent = modoComparar ? '✕ Cerrar comparación' : '⟳ Comparar';
+      buscar();
+      toast(modoComparar ? '⟳ Modo comparar activado' : '✦ Modo comparar desactivado');
     }
 
     function tiempoRelativo(fecha) {
@@ -1791,32 +2234,40 @@
       return 'hace ' + Math.floor(seg / 86400) + ' días';
     }
 
-    let modoComparar = false;
+    function tendencia(hist) {
+      if (!hist || hist.length < 2) return '';
+      const d = hist[hist.length - 1] - hist[hist.length - 2];
+      if (d < 0) return '<span class="precio-tendencia tendencia-baja">▼ Bajando</span>';
+      if (d > 0) return '<span class="precio-tendencia tendencia-alta">▲ Subiendo</span>';
+      return '<span class="precio-tendencia tendencia-igual">● Estable</span>';
+    }
 
-    function compararTodos() {
-      const btn = document.getElementById('btnComparar');
-      const selectMercado = document.getElementById('filtroMercado');
+    function crearTarjetaHTML(p, m, inFavSection = false) {
+      const esNuevo = (new Date() - new Date(p.fecha)) < 86400000;
+      const esFav = favoritos.includes(p.id);
 
-      if (modoComparar) {
-        modoComparar = false;
-        btn.classList.remove('activo');
-        btn.textContent = '⟳ Comparar todos';
-        if (selectMercado.dataset.anterior) {
-          selectMercado.value = selectMercado.dataset.anterior;
-        } else {
-          selectMercado.value = '';
-        }
-        toast('✦ Filtro restaurado');
-      } else {
-        modoComparar = true;
-        btn.classList.add('activo');
-        btn.textContent = '✕ Cerrar comparación';
-        selectMercado.dataset.anterior = selectMercado.value;
-        selectMercado.value = '';
-        toast('⟳ Mostrando todos los productos para comparar');
-      }
+      // Escapar JSON para evitar problemas con comillas
+      const pData = JSON.stringify(p).replace(/"/g, '&quot;');
 
-      buscar();
+      return `
+          <div class="tarjeta" onclick="abrirModal(${pData})">
+            <div class="tarjeta-imagen">
+              <span style="font-size:40px">${p.emoji || '📦'}</span>
+              <div class="glow-ring"></div>
+            </div>
+            ${p.oferta ? `<div class="badge-oferta">✦ ${p.oferta}</div>` : ''}
+            ${esNuevo ? `<div class="badge-nuevo">✦ Nuevo</div>` : ''}
+            <h3 title="${p.nombre}">${p.nombre}</h3>
+            ${tendencia(p.historial)}
+            <div class="precio">$${Number(p.precio).toLocaleString('es-CO')}<span> / ${p.unidad}</span></div>
+            <div class="mercado-link">📍 ${m.nombre}</div>
+            <div class="fecha">⏱ ${tiempoRelativo(p.fecha)}</div>
+            <div class="tarjeta-actions">
+              <button class="btn-add" onclick="event.stopPropagation(); agregarAlCarrito(${pData})">🛒 Agregar</button>
+              <button class="btn-fav ${esFav ? 'faved' : ''}" onclick="toggleFavorito('${p.id}', event)" title="${esFav ? 'Quitar favorito' : 'Guardar favorito'}">❤️</button>
+            </div>
+          </div>
+        `;
     }
 
     function buscar() {
@@ -1824,166 +2275,161 @@
       const mercadoId = document.getElementById('filtroMercado').value;
       const categoria = document.getElementById('filtroCategoria').value;
       const orden = document.getElementById('orden').value;
+      const precioMax = parseInt(document.getElementById('precioMax').value);
 
-      let productos = getProductosActivos();
+      document.getElementById('searchClear').style.display = texto ? 'flex' : 'none';
 
-      // Filtro por mercado
-      if (!modoComparar && mercadoId && mercadoId !== '') {
-        productos = productos.filter(p => p.mercadoId === mercadoId);
-      }
+      let productos = getProductos();
 
-      // Filtro por texto
-      if (texto) {
-        productos = productos.filter(p => p.nombre.toLowerCase().includes(texto));
-      }
+      if (!modoComparar && mercadoId) productos = productos.filter(p => p.mercadoId === mercadoId);
+      if (texto) productos = productos.filter(p => p.nombre.toLowerCase().includes(texto) || (p.categoria || '').toLowerCase()
+        .includes(texto));
+      if (categoria) productos = productos.filter(p => p.categoria === categoria);
+      if (precioMax < 50000) productos = productos.filter(p => p.precio <= precioMax);
 
-      // Filtro por categoría
-      if (categoria) {
-        productos = productos.filter(p => p.categoria === categoria);
-      }
-
-      // Ordenar
       if (orden === 'precio_asc') productos.sort((a, b) => a.precio - b.precio);
       if (orden === 'precio_desc') productos.sort((a, b) => b.precio - a.precio);
       if (orden === 'reciente') productos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
       if (orden === 'nombre') productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-      document.getElementById('total-productos').textContent = productos.length;
+      document.getElementById('totalProductos').textContent = productos.length;
 
-      const infoEl = document.getElementById('info');
-
-      let mercadoNombre = '';
-      if (mercadoId && !modoComparar) {
-        const mercados = obtenerMercados();
-        const m = mercados.find(x => x.id === mercadoId);
-        mercadoNombre = m ? ' en <strong>' + m.nombre + '</strong>' : '';
-      }
-
-      if (productos.length === 0) {
-        infoEl.innerHTML = '<span>✦ No se encontraron productos' + mercadoNombre + '</span><span class="badge-cantidad">0</span>';
-      } else {
-        let mensaje = '✦ Mostrando <strong>' + productos.length + '</strong> producto' + (productos.length !== 1 ? 's' : '');
-        if (modoComparar) {
-          mensaje += ' <span class="modo-comparar">⟳ MODO COMPARAR</span>';
-        }
-        mensaje += mercadoNombre;
-        if (texto) mensaje += ' para "<strong>' + texto + '</strong>"';
-        if (categoria) mensaje += ' en ' + categoria;
-
-        infoEl.innerHTML = mensaje + '<span class="badge-cantidad">' + productos.length + '</span>';
-      }
-
-      const categorias = {};
-      const mercados = obtenerMercados();
-
-      productos.forEach(p => {
-        const cat = p.categoria || 'Otros';
-        if (!categorias[cat]) categorias[cat] = [];
-        categorias[cat].push(p);
-      });
+      const mercados = getMercados();
+      const m = mercados.find(x => x.id === mercadoId);
+      let infoMsg = `✦ <strong>${productos.length}</strong> producto${productos.length !== 1 ? 's' : ''}`;
+      if (modoComparar) infoMsg += ' <span class="modo-comparar">⟳ MODO COMPARAR</span>';
+      if (m && !modoComparar) infoMsg += ` en <strong>${m.nombre}</strong>`;
+      if (texto) infoMsg += ` para "<strong>${texto}</strong>"`;
+      if (categoria) infoMsg += ` · ${categoria}`;
+      document.getElementById('info').innerHTML = `<span>${infoMsg}</span><span class="badge-count">${productos.length}</span>`;
 
       const container = document.getElementById('resultados');
 
-      if (productos.length === 0) {
+      // Comparison table
+      if (modoComparar && texto && productos.length > 0) {
+        const minPrecio = Math.min(...productos.map(p => p.precio));
+        const maxPrecio = Math.max(...productos.map(p => p.precio));
+        const tableRows = [...productos].sort((a, b) => a.precio - b.precio).map(p => {
+          const mv = mercados.find(x => x.id === p.mercadoId) || { nombre: '—' };
+          const esMejor = p.precio === minPrecio;
+          const esPeor = p.precio === maxPrecio && productos.length > 1;
+          return `<tr>
+              <td>${p.emoji} ${p.nombre}</td>
+              <td>${mv.nombre}</td>
+              <td class="price-cell ${esMejor ? 'price-best' : esPeor ? 'price-worst' : ''}">
+                $${Number(p.precio).toLocaleString('es-CO')}/${p.unidad}
+                ${esMejor ? '<span class="badge-best">✦ Mejor precio</span>' : ''}
+              </td>
+              <td>${p.oferta || '—'}</td>
+            </tr>`;
+        }).join('');
+
         container.innerHTML = `
-              <div class="vacio">
-                <span class="icono">✦</span>
-                <h3>No encontramos resultados</h3>
-                <p>Intenta con otras palabras o quita los filtros</p>
+            <div class="categoria-section">
+              <div class="categoria-header"><span class="icono">📊</span><h2>Tabla comparativa</h2></div>
+              <div class="compare-table-wrap">
+                <table class="compare-table">
+                  <thead><tr><th>Producto</th><th>Mercado</th><th>Precio</th><th>Oferta</th></tr></thead>
+                  <tbody>${tableRows}</tbody>
+                </table>
               </div>
-            `;
+            </div>
+          `;
         return;
       }
 
-      const ordenCategorias = ['Frutas', 'Verduras', 'Carnes', 'Lácteos', 'Granos', 'Bebidas', 'Otros'];
-      const categoriasOrdenadas = Object.keys(categorias).sort((a, b) => {
-        const ia = ordenCategorias.indexOf(a);
-        const ib = ordenCategorias.indexOf(b);
+      if (productos.length === 0) {
+        container.innerHTML = `
+            <div class="vacio">
+              <span class="icono">🔍</span>
+              <h3>Sin resultados</h3>
+              <p>Prueba con otras palabras o quita algunos filtros</p>
+            </div>`;
+        return;
+      }
+
+      const ordenCat = ['Frutas', 'Verduras', 'Carnes', 'Lácteos', 'Granos', 'Bebidas', 'Otros'];
+      const emojisCat = { Frutas: '🍎', Verduras: '🥬', Carnes: '🍗', Lácteos: '🥛', Granos: '🌾', Bebidas: '🧃',
+        Otros: '📦' };
+
+      const catMap = {};
+      productos.forEach(p => { const c = p.categoria || 'Otros'; if (!catMap[c]) catMap[c] = [];
+        catMap[c].push(p); });
+
+      const cats = Object.keys(catMap).sort((a, b) => {
+        const ia = ordenCat.indexOf(a),
+          ib = ordenCat.indexOf(b);
         if (ia === -1 && ib === -1) return a.localeCompare(b);
         if (ia === -1) return 1;
         if (ib === -1) return -1;
         return ia - ib;
       });
 
-      let html = '';
-      const emojisCat = {
-        'Frutas': '🍎',
-        'Verduras': '🥬',
-        'Carnes': '🍗',
-        'Lácteos': '🥛',
-        'Granos': '🌾',
-        'Bebidas': '🧃',
-        'Otros': '📦'
-      };
+      container.innerHTML = cats.map((cat, ci) => {
+        const items = catMap[cat];
+        const cards = items.map(p => {
+          const mv = mercados.find(x => x.id === p.mercadoId) || { nombre: 'Mercado' };
+          return crearTarjetaHTML(p, mv);
+        }).join('');
 
-      categoriasOrdenadas.forEach((cat, catIndex) => {
-        const items = categorias[cat];
-        html += `
-              <div class="categoria-section" style="animation-delay: ${catIndex * 0.08}s">
-                <div class="categoria-header">
-                  <span class="icono">${emojisCat[cat] || '📦'}</span>
-                  <h2>${cat}</h2>
-                  <span class="count">${items.length}</span>
-                  <span class="view-all" onclick="filtrarPorCategoria('${cat}')">Ver todos →</span>
-                </div>
-                <div class="grid">
-            `;
-
-        items.forEach((p) => {
-          const m = mercados.find(x => x.id === p.mercadoId) || { nombre: 'Mercado' };
-          const imagen = p.imagenUrl ||
-            p.emoji ||
-            '📦';
-
-          const esNuevo = (new Date() - new Date(p.fecha)) < 86400000;
-
-          html += `
-                  <div class="tarjeta" onclick="abrirModal(${JSON.stringify(p).replace(/"/g, '&quot;')})">
-                    <div class="tarjeta-imagen">
-                      <span style="font-size:42px">${imagen}</span>
-                      <div class="glow-ring"></div>
-                    </div>
-                    ${p.oferta ? '<div class="badge-oferta">✦ ' + p.oferta + '</div>' : ''}
-                    ${esNuevo ? '<div class="badge-nuevo">✦ Nuevo</div>' : ''}
-                    <h3 title="${p.nombre}">${p.nombre}</h3>
-                    <div class="precio">$${Number(p.precio).toLocaleString('es-CO')}<span> / ${p.unidad}</span></div>
-                    <div class="mercado-link">${m.nombre}</div>
-                    <div class="fecha">✦ ${tiempoRelativo(p.fecha)}</div>
-                    <button class="btn-add" onclick="event.stopPropagation(); toast('✦ Agregado al carrito: ${p.nombre}')">
-                      <span>🛒</span> Agregar
-                    </button>
-                  </div>
-                `;
-        });
-
-        html += `
-                </div>
+        return `
+            <div class="categoria-section" style="animation-delay:${ci * .07}s">
+              <div class="categoria-header">
+                <span class="icono">${emojisCat[cat] || '📦'}</span>
+                <h2>${cat}</h2>
+                <span class="count">${items.length}</span>
+                <span class="view-all" onclick="filtrarChip('${cat}')">Ver todos →</span>
               </div>
-            `;
-      });
+              <div class="grid">${cards}</div>
+            </div>`;
+      }).join('');
 
-      container.innerHTML = html;
+      if (mostrandoFavoritos) renderFavoritos();
     }
 
-    // Enter en búsqueda
-    document.getElementById('busqueda').addEventListener('keypress', function(e) {
+    // ══════════════════════════════════════════════════════════
+    //  STATS
+    // ══════════════════════════════════════════════════════════
+    function actualizarStats() {
+      const prods = getProductos();
+      const mercs = getMercados();
+      document.getElementById('statProductos').textContent = prods.length;
+      document.getElementById('statMercados').textContent = mercs.length;
+
+      const byName = {};
+      prods.forEach(p => { if (!byName[p.nombre]) byName[p.nombre] = [];
+        byName[p.nombre].push(p.precio); });
+      let maxSave = 0;
+      Object.values(byName).forEach(precios => {
+        if (precios.length > 1) {
+          const save = Math.max(...precios) - Math.min(...precios);
+          if (save > maxSave) maxSave = save;
+        }
+      });
+      document.getElementById('statAhorro').textContent = maxSave > 0 ? '$' + maxSave.toLocaleString('es-CO') : '—';
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  KEYBOARD SEARCH
+    // ══════════════════════════════════════════════════════════
+    document.getElementById('busqueda').addEventListener('keyup', function(e) {
       if (e.key === 'Enter') buscar();
+      document.getElementById('searchClear').style.display = this.value ? 'flex' : 'none';
     });
 
-    // ═══════════════════════════════════════════════════════════════════
-    //  INICIO
-    // ═══════════════════════════════════════════════════════════════════
-
+    // ══════════════════════════════════════════════════════════
+    //  INIT
+    // ══════════════════════════════════════════════════════════
     inicializarDatos();
     cargarMercadosFiltro();
+    actualizarStats();
+    actualizarCartBadge();
+    actualizarFavBadge();
     buscar();
 
-    console.log('✦ MercadosApp — Interfaz Ultramoderna CORREGIDA');
-    console.log('✦ Diseño con glassmorphism, neón y animaciones');
-    console.log('✦ Ventanas modales para ver detalles de productos');
-    console.log('✦ Chips interactivos, filtros modernos y botones 3D');
-    console.log('✦ Todas las funcionalidades funcionando correctamente');
+    console.log('✦ MercadosApp — Versión Ultra Premium');
+    console.log('✦ Carrito, favoritos, comparador y más');
+    console.log('✦ Total productos: ' + getProductos().length);
   </script>
-
 </body>
 </html>

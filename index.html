@@ -383,6 +383,18 @@
        ═══════════════════════════════════════════════════════════════ */
     .categoria-section {
       margin-bottom: 48px;
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .categoria-header {
@@ -743,48 +755,6 @@
         font-size: 18px;
       }
     }
-
-    /* ═══════════════════════════════════════════════════════════════
-       ANIMACIONES DE ENTRADA
-       ═══════════════════════════════════════════════════════════════ */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .categoria-section {
-      animation: fadeInUp 0.6s ease forwards;
-    }
-
-    .categoria-section:nth-child(2) {
-      animation-delay: 0.1s;
-    }
-    .categoria-section:nth-child(3) {
-      animation-delay: 0.2s;
-    }
-    .categoria-section:nth-child(4) {
-      animation-delay: 0.3s;
-    }
-    .categoria-section:nth-child(5) {
-      animation-delay: 0.4s;
-    }
-    .categoria-section:nth-child(6) {
-      animation-delay: 0.5s;
-    }
-    .categoria-section:nth-child(7) {
-      animation-delay: 0.6s;
-    }
-
-    .tarjeta {
-      animation: fadeInUp 0.5s ease forwards;
-      animation-delay: calc(var(--i, 0) * 0.05s);
-    }
   </style>
 </head>
 <body>
@@ -818,7 +788,7 @@
   <div class="filtros">
     <label>📍 Mercado</label>
     <select id="filtroMercado" onchange="buscar()">
-      <option value="">Todos</option>
+      <option value="">✦ Todos los mercados</option>
     </select>
 
     <label>📂 Categoría</label>
@@ -1006,21 +976,33 @@
 
       let productos = getProductosActivos();
 
-      if (!modoComparar && mercadoId) {
+      // 🔥 FILTRO POR MERCADO: Si NO está en modo comparar Y hay un mercado seleccionado
+      if (!modoComparar && mercadoId && mercadoId !== '') {
         productos = productos.filter(p => p.mercadoId === mercadoId);
       }
 
-      if (texto) productos = productos.filter(p => p.nombre.toLowerCase().includes(texto));
-      if (categoria) productos = productos.filter(p => p.categoria === categoria);
+      // Filtro por texto
+      if (texto) {
+        productos = productos.filter(p => p.nombre.toLowerCase().includes(texto));
+      }
 
+      // Filtro por categoría
+      if (categoria) {
+        productos = productos.filter(p => p.categoria === categoria);
+      }
+
+      // Ordenar
       if (orden === 'precio_asc') productos.sort((a, b) => a.precio - b.precio);
       if (orden === 'precio_desc') productos.sort((a, b) => b.precio - a.precio);
       if (orden === 'reciente') productos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
       if (orden === 'nombre') productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
+      // Actualizar contador
       document.getElementById('total-productos').textContent = productos.length;
+
       const infoEl = document.getElementById('info');
 
+      // Determinar el nombre del mercado filtrado
       let mercadoNombre = '';
       if (mercadoId && !modoComparar) {
         const mercados = obtenerMercados();
@@ -1042,6 +1024,7 @@
         infoEl.innerHTML = mensaje + '<span class="badge-cantidad">' + productos.length + '</span>';
       }
 
+      // Agrupar por categoría
       const categorias = {};
       const mercados = obtenerMercados();
 
@@ -1088,7 +1071,7 @@
       categoriasOrdenadas.forEach((cat, catIndex) => {
         const items = categorias[cat];
         html += `
-              <div class="categoria-section" style="--i:${catIndex}">
+              <div class="categoria-section" style="animation-delay: ${catIndex * 0.1}s">
                 <div class="categoria-header">
                   <span class="icono">${emojisCat[cat] || '📦'}</span>
                   <h2>${cat}</h2>
@@ -1097,14 +1080,14 @@
                 <div class="grid">
             `;
 
-        items.forEach((p, idx) => {
+        items.forEach((p) => {
           const m = mercados.find(x => x.id === p.mercadoId) || { nombre: 'Mercado' };
           const imagen = p.imagenUrl ?
             '<img src="' + p.imagenUrl + '" alt="' + p.nombre + '">' :
             '<span style="font-size:38px">' + (p.emoji || '📦') + '</span>';
 
           html += `
-                  <div class="tarjeta" style="--i:${idx}">
+                  <div class="tarjeta">
                     <div class="tarjeta-imagen">${imagen}</div>
                     ${p.oferta ? '<div class="badge-oferta">✦ ' + p.oferta + '</div>' : ''}
                     <h3 title="${p.nombre}">${p.nombre}</h3>
@@ -1124,6 +1107,7 @@
       container.innerHTML = html;
     }
 
+    // Enter en búsqueda
     document.getElementById('busqueda').addEventListener('keypress', e => {
       if (e.key === 'Enter') buscar();
     });
@@ -1136,9 +1120,9 @@
     cargarMercadosFiltro();
     buscar();
 
-    console.log('✦ MercadosApp — Versión Futurista');
-    console.log('✦ Modo oscuro con efectos glassmorphism');
-    console.log('✦ Comparador de productos integrado');
+    console.log('✦ MercadosApp — Versión Futurista con filtro funcionando');
+    console.log('✦ Selecciona un mercado en el filtro para ver sus productos');
+    console.log('✦ Usa "Comparar todos" para ver todos los productos');
   </script>
 
 </body>

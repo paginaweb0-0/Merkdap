@@ -15,86 +15,96 @@
     }
 
     :root {
-      --primary: #0b5e2e;
-      --primary-light: #15803d;
-      --primary-dark: #064e1b;
-      --primary-bg: #f0fdf4;
-      --accent: #ca8a04;
-      --accent-hover: #a16207;
-      --gray-50: #f9fafb;
-      --gray-100: #f3f4f6;
-      --gray-200: #e5e7eb;
-      --gray-300: #d1d5db;
-      --gray-500: #6b7280;
-      --gray-700: #374151;
-      --gray-900: #111827;
-      --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-      --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.10);
-      --radius: 16px;
-      --radius-sm: 10px;
-      --transition: 0.25s ease;
+      --primary: #0f172a;
+      --primary-light: #1e293b;
+      --primary-dark: #020617;
+      --primary-glow: #22d3ee;
+      --primary-glow2: #818cf8;
+      --accent: #f59e0b;
+      --accent-hover: #d97706;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --radius: 20px;
+      --radius-sm: 12px;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     body {
       font-family: 'Inter', -apple-system, system-ui, sans-serif;
-      background: var(--gray-50);
-      color: var(--gray-900);
+      background: var(--primary-dark);
+      color: var(--text-primary);
       min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse at 10% 20%, rgba(34, 211, 238, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 90% 80%, rgba(129, 140, 248, 0.08) 0%, transparent 50%);
     }
 
     /* ═══════════════════════════════════════════════════════════════
        SCROLLBAR
        ═══════════════════════════════════════════════════════════════ */
     ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 8px;
+      height: 8px;
     }
     ::-webkit-scrollbar-track {
-      background: var(--gray-100);
+      background: var(--primary);
+      border-radius: 10px;
     }
     ::-webkit-scrollbar-thumb {
-      background: var(--gray-300);
+      background: linear-gradient(135deg, var(--primary-glow), var(--primary-glow2));
       border-radius: 10px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: var(--gray-500);
+      filter: brightness(1.2);
     }
 
     /* ═══════════════════════════════════════════════════════════════
        NAV
        ═══════════════════════════════════════════════════════════════ */
     nav {
-      background: var(--primary-dark);
-      padding: 0 24px;
-      height: 64px;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 0 32px;
+      height: 72px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: sticky;
       top: 0;
       z-index: 50;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
     }
 
     nav .logo {
       color: white;
-      font-size: 20px;
-      font-weight: 700;
+      font-size: 22px;
+      font-weight: 800;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       cursor: pointer;
-      letter-spacing: -0.3px;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--primary-glow), var(--primary-glow2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     nav .logo span {
-      background: var(--accent);
-      font-size: 11px;
-      padding: 2px 10px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      font-size: 10px;
+      padding: 2px 12px;
       border-radius: 20px;
       font-weight: 600;
-      color: white;
-      margin-left: 4px;
+      color: var(--text-secondary);
+      -webkit-text-fill-color: var(--text-secondary);
+      border: 1px solid var(--glass-border);
     }
 
     nav .nav-links {
@@ -105,170 +115,229 @@
     }
 
     nav .nav-links a {
-      color: #bbf7d0;
+      color: var(--text-secondary);
       text-decoration: none;
       font-size: 14px;
       cursor: pointer;
-      padding: 6px 12px;
-      border-radius: 8px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
       transition: var(--transition);
+      position: relative;
     }
 
     nav .nav-links a:hover {
-      background: rgba(255, 255, 255, 0.1);
       color: white;
+      background: var(--glass-bg);
+    }
+
+    nav .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary-glow), var(--primary-glow2));
+      transition: var(--transition);
+      transform: translateX(-50%);
+    }
+
+    nav .nav-links a:hover::after {
+      width: 60%;
     }
 
     nav .nav-links .btn-panel {
-      background: var(--accent);
-      color: white;
+      background: linear-gradient(135deg, var(--primary-glow), var(--primary-glow2));
+      color: var(--primary-dark);
       border: none;
-      padding: 8px 18px;
+      padding: 10px 24px;
       border-radius: var(--radius-sm);
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 700;
       cursor: pointer;
       transition: var(--transition);
       text-decoration: none;
       display: inline-block;
+      box-shadow: 0 4px 20px rgba(34, 211, 238, 0.2);
     }
 
     nav .nav-links .btn-panel:hover {
-      background: var(--accent-hover);
-      transform: translateY(-1px);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 8px 30px rgba(34, 211, 238, 0.35);
     }
 
     /* ═══════════════════════════════════════════════════════════════
        HERO
        ═══════════════════════════════════════════════════════════════ */
     .hero {
-      background: linear-gradient(145deg, var(--primary-dark), var(--primary));
-      padding: 48px 24px 40px;
+      padding: 60px 24px 50px;
       text-align: center;
-      color: white;
       position: relative;
       overflow: hidden;
     }
 
     .hero::before {
-      content: '🛒';
+      content: '';
       position: absolute;
-      right: -20px;
-      top: -30px;
-      font-size: 180px;
-      opacity: 0.06;
-      transform: rotate(15deg);
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background:
+        radial-gradient(ellipse at 30% 50%, rgba(34, 211, 238, 0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 50%, rgba(129, 140, 248, 0.05) 0%, transparent 50%);
+      animation: heroGlow 20s ease-in-out infinite alternate;
       pointer-events: none;
     }
 
-    .hero h1 {
-      font-size: 32px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      margin-bottom: 6px;
+    @keyframes heroGlow {
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+      100% {
+        transform: translate(5%, 5%) rotate(5deg);
+      }
     }
 
-    .hero h1 span {
-      color: #fcd34d;
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+      position: relative;
+      background: linear-gradient(135deg, #ffffff 0%, var(--primary-glow) 50%, var(--primary-glow2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero h1 .highlight {
+      background: linear-gradient(135deg, var(--accent), #f97316);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .hero p {
-      font-size: 15px;
-      color: #bbf7d0;
-      margin-bottom: 24px;
+      font-size: 16px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      position: relative;
     }
 
     .search-bar {
       display: flex;
-      gap: 10px;
-      max-width: 560px;
+      gap: 12px;
+      max-width: 600px;
       margin: 0 auto;
+      position: relative;
     }
 
     .search-bar input {
       flex: 1;
-      padding: 14px 20px;
+      padding: 16px 24px;
       border-radius: var(--radius-sm);
-      border: none;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
       font-size: 15px;
       outline: none;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      color: white;
       transition: var(--transition);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .search-bar input::placeholder {
+      color: var(--text-secondary);
     }
 
     .search-bar input:focus {
-      box-shadow: 0 4px 28px rgba(0, 0, 0, 0.18);
+      border-color: var(--primary-glow);
+      box-shadow: 0 4px 30px rgba(34, 211, 238, 0.15);
       transform: scale(1.01);
     }
 
     .search-bar button {
-      background: var(--accent);
-      color: white;
+      background: linear-gradient(135deg, var(--primary-glow), var(--primary-glow2));
+      color: var(--primary-dark);
       border: none;
-      padding: 14px 32px;
+      padding: 16px 36px;
       border-radius: var(--radius-sm);
       font-size: 15px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       transition: var(--transition);
       display: flex;
       align-items: center;
       gap: 8px;
+      box-shadow: 0 4px 20px rgba(34, 211, 238, 0.2);
     }
 
     .search-bar button:hover {
-      background: var(--accent-hover);
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(202, 138, 4, 0.3);
+      box-shadow: 0 8px 30px rgba(34, 211, 238, 0.35);
     }
 
     /* ═══════════════════════════════════════════════════════════════
        FILTROS
        ═══════════════════════════════════════════════════════════════ */
     .filtros {
-      background: white;
-      border-bottom: 1px solid var(--gray-200);
-      padding: 12px 24px;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 14px 32px;
       display: flex;
       gap: 16px;
       flex-wrap: wrap;
       align-items: center;
       position: sticky;
-      top: 64px;
+      top: 72px;
       z-index: 40;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
     }
 
     .filtros label {
-      font-size: 12px;
-      color: var(--gray-500);
+      font-size: 11px;
+      color: var(--text-secondary);
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.08em;
     }
 
     .filtros select {
-      padding: 8px 14px;
-      border: 1.5px solid var(--gray-200);
+      padding: 10px 16px;
+      border: 1px solid var(--glass-border);
       border-radius: var(--radius-sm);
       font-size: 13px;
-      background: white;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      color: white;
       cursor: pointer;
       transition: var(--transition);
       min-width: 140px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
     }
 
     .filtros select:focus {
-      border-color: var(--primary-light);
+      border-color: var(--primary-glow);
       outline: none;
-      box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.1);
+      box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+    }
+
+    .filtros select option {
+      background: var(--primary);
+      color: white;
     }
 
     .filtros .btn-comparar {
-      background: var(--primary-light);
-      color: white;
-      border: none;
-      padding: 8px 20px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-secondary);
+      padding: 10px 24px;
       border-radius: var(--radius-sm);
       font-size: 13px;
       font-weight: 600;
@@ -277,139 +346,181 @@
       margin-left: auto;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      backdrop-filter: blur(10px);
     }
 
     .filtros .btn-comparar:hover {
-      background: var(--primary-dark);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--primary-glow);
+      color: white;
       transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(21, 128, 61, 0.25);
     }
 
     .filtros .btn-comparar.activo {
-      background: var(--accent);
+      background: linear-gradient(135deg, var(--accent), #f97316);
+      border-color: transparent;
+      color: var(--primary-dark);
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.25);
     }
 
     .filtros .btn-comparar.activo:hover {
-      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(245, 158, 11, 0.35);
     }
 
     /* ═══════════════════════════════════════════════════════════════
        CONTENIDO
        ═══════════════════════════════════════════════════════════════ */
     .contenido {
-      max-width: 1200px;
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 32px 24px;
     }
 
     /* ═══════════════════════════════════════════════════════════════
        CATEGORÍAS
        ═══════════════════════════════════════════════════════════════ */
     .categoria-section {
-      margin-bottom: 40px;
+      margin-bottom: 48px;
     }
 
     .categoria-header {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--gray-200);
+      gap: 14px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--glass-border);
     }
 
     .categoria-header .icono {
-      font-size: 28px;
+      font-size: 30px;
+      filter: drop-shadow(0 0 20px rgba(34, 211, 238, 0.1));
     }
 
     .categoria-header h2 {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
-      color: var(--gray-900);
+      color: white;
+      letter-spacing: -0.3px;
     }
 
     .categoria-header .count {
       font-size: 13px;
-      color: var(--gray-500);
+      color: var(--text-secondary);
       font-weight: 500;
-      background: var(--gray-100);
-      padding: 2px 12px;
+      background: var(--glass-bg);
+      padding: 2px 14px;
       border-radius: 20px;
+      border: 1px solid var(--glass-border);
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
     }
 
     /* ═══════════════════════════════════════════════════════════════
-       TARJETA
+       TARJETA GLASSMORPHISM
        ═══════════════════════════════════════════════════════════════ */
     .tarjeta {
-      background: white;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-radius: var(--radius);
-      border: 1px solid var(--gray-200);
-      padding: 18px;
+      border: 1px solid var(--glass-border);
+      padding: 20px;
       transition: var(--transition);
       position: relative;
+      overflow: hidden;
+    }
+
+    .tarjeta::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.03), rgba(129, 140, 248, 0.03));
+      opacity: 0;
+      transition: var(--transition);
+      pointer-events: none;
+    }
+
+    .tarjeta:hover::before {
+      opacity: 1;
     }
 
     .tarjeta:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-hover);
-      border-color: var(--primary-light);
+      transform: translateY(-6px);
+      border-color: var(--primary-glow);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 40px rgba(34, 211, 238, 0.05);
     }
 
     .tarjeta-imagen {
       width: 100%;
-      height: 100px;
-      background: var(--primary-bg);
+      height: 110px;
+      background: rgba(255, 255, 255, 0.03);
       border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 38px;
-      margin-bottom: 10px;
+      font-size: 42px;
+      margin-bottom: 12px;
       overflow: hidden;
       transition: var(--transition);
+      border: 1px solid var(--glass-border);
     }
 
     .tarjeta:hover .tarjeta-imagen {
-      transform: scale(1.02);
+      transform: scale(1.05);
+      border-color: var(--primary-glow);
     }
 
     .tarjeta h3 {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       margin-bottom: 2px;
       display: -webkit-box;
       -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      color: white;
     }
 
     .precio {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
-      color: var(--primary-dark);
-      margin: 6px 0 2px;
+      margin: 8px 0 4px;
+      background: linear-gradient(135deg, var(--primary-glow), var(--primary-glow2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .precio span {
-      font-size: 12px;
-      color: var(--gray-500);
+      font-size: 13px;
+      color: var(--text-secondary);
       font-weight: 400;
+      -webkit-text-fill-color: var(--text-secondary);
     }
 
     .mercado-link {
       font-size: 12px;
-      color: var(--primary-light);
+      color: var(--primary-glow);
       font-weight: 500;
       display: flex;
       align-items: center;
       gap: 4px;
+      opacity: 0.8;
+      transition: var(--transition);
+    }
+
+    .mercado-link:hover {
+      opacity: 1;
     }
 
     .mercado-link::before {
@@ -419,19 +530,22 @@
 
     .fecha {
       font-size: 11px;
-      color: var(--gray-500);
-      margin-top: 4px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      opacity: 0.6;
     }
 
     .badge-oferta {
       display: inline-block;
-      background: #fef9c3;
-      color: #854d0e;
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--accent);
       font-size: 11px;
       font-weight: 600;
-      padding: 2px 12px;
+      padding: 2px 14px;
       border-radius: 20px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      backdrop-filter: blur(10px);
     }
 
     /* ═══════════════════════════════════════════════════════════════
@@ -439,20 +553,21 @@
        ═══════════════════════════════════════════════════════════════ */
     .vacio {
       text-align: center;
-      padding: 60px 20px;
-      color: var(--gray-500);
+      padding: 80px 20px;
+      color: var(--text-secondary);
       grid-column: 1/-1;
     }
 
     .vacio .icono {
-      font-size: 48px;
-      margin-bottom: 12px;
+      font-size: 56px;
+      margin-bottom: 16px;
+      display: block;
     }
 
     .vacio h3 {
-      font-size: 18px;
-      color: var(--gray-700);
-      margin-bottom: 4px;
+      font-size: 20px;
+      color: white;
+      margin-bottom: 6px;
     }
 
     .vacio p {
@@ -464,12 +579,13 @@
        ═══════════════════════════════════════════════════════════════ */
     .resultados-info {
       font-size: 14px;
-      color: var(--gray-500);
-      margin-bottom: 20px;
-      padding: 12px 16px;
-      background: white;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      padding: 14px 20px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
       border-radius: var(--radius-sm);
-      border: 1px solid var(--gray-200);
+      border: 1px solid var(--glass-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -478,26 +594,45 @@
     }
 
     .resultados-info strong {
-      color: var(--primary-dark);
+      color: white;
     }
 
     .resultados-info .badge-cantidad {
-      background: var(--primary-bg);
-      color: var(--primary-dark);
-      padding: 2px 14px;
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(129, 140, 248, 0.15));
+      color: var(--primary-glow);
+      padding: 2px 16px;
       border-radius: 20px;
-      font-weight: 600;
-      font-size: 13px;
+      font-weight: 700;
+      font-size: 14px;
+      border: 1px solid rgba(34, 211, 238, 0.1);
+    }
+
+    .resultados-info .modo-comparar {
+      color: var(--accent);
+      font-weight: 700;
+      animation: pulseText 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseText {
+      0%,
+      100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.6;
+      }
     }
 
     /* ═══════════════════════════════════════════════════════════════
        FOOTER
        ═══════════════════════════════════════════════════════════════ */
     footer {
-      background: var(--primary-dark);
-      color: #9ca3af;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--glass-border);
+      color: var(--text-secondary);
       text-align: center;
-      padding: 24px;
+      padding: 28px;
       margin-top: 20px;
       font-size: 13px;
     }
@@ -513,17 +648,20 @@
       position: fixed;
       bottom: 30px;
       right: 30px;
-      background: var(--primary-dark);
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
       color: white;
-      padding: 14px 24px;
+      padding: 16px 28px;
       border-radius: var(--radius-sm);
       font-size: 14px;
       z-index: 200;
       transform: translateY(100px);
       opacity: 0;
-      transition: all 0.4s ease;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       max-width: 380px;
-      box-shadow: var(--shadow-hover);
+      box-shadow: var(--glass-shadow);
     }
 
     .toast.visible {
@@ -532,7 +670,12 @@
     }
 
     .toast.error {
-      background: #dc2626;
+      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.15);
+    }
+
+    .toast .toast-icon {
+      margin-right: 10px;
     }
 
     /* ═══════════════════════════════════════════════════════════════
@@ -547,7 +690,7 @@
       }
 
       .hero h1 {
-        font-size: 24px;
+        font-size: 30px;
       }
 
       .search-bar {
@@ -572,8 +715,8 @@
       }
 
       .grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 12px;
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 14px;
       }
 
       .resultados-info {
@@ -588,17 +731,59 @@
       }
 
       .tarjeta {
-        padding: 12px;
+        padding: 14px;
       }
 
       .tarjeta-imagen {
-        height: 70px;
-        font-size: 28px;
+        height: 80px;
+        font-size: 30px;
       }
 
       .precio {
-        font-size: 16px;
+        font-size: 18px;
       }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       ANIMACIONES DE ENTRADA
+       ═══════════════════════════════════════════════════════════════ */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .categoria-section {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .categoria-section:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+    .categoria-section:nth-child(3) {
+      animation-delay: 0.2s;
+    }
+    .categoria-section:nth-child(4) {
+      animation-delay: 0.3s;
+    }
+    .categoria-section:nth-child(5) {
+      animation-delay: 0.4s;
+    }
+    .categoria-section:nth-child(6) {
+      animation-delay: 0.5s;
+    }
+    .categoria-section:nth-child(7) {
+      animation-delay: 0.6s;
+    }
+
+    .tarjeta {
+      animation: fadeInUp 0.5s ease forwards;
+      animation-delay: calc(var(--i, 0) * 0.05s);
     }
   </style>
 </head>
@@ -608,10 +793,10 @@
   NAV
   ═══════════════════════════════════════════════════════════════ -->
   <nav>
-    <span class="logo" onclick="location.reload()">🛒 MercadosApp <span>beta</span></span>
+    <span class="logo" onclick="location.reload()">✦ MercadosApp <span>beta</span></span>
     <div class="nav-links">
-      <a href="#" onclick="location.reload()">🏠 Inicio</a>
-      <a href="panel.html" class="btn-panel">🔐 Panel mercader</a>
+      <a href="#" onclick="location.reload()">⟡ Inicio</a>
+      <a href="panel.html" class="btn-panel">✦ Panel mercader</a>
     </div>
   </nav>
 
@@ -619,11 +804,11 @@
   HERO
   ═══════════════════════════════════════════════════════════════ -->
   <div class="hero">
-    <h1>Encuentra los <span>mejores precios</span> 🛍️</h1>
+    <h1>Encuentra los <span class="highlight">mejores precios</span> ✦</h1>
     <p>Compara productos de diferentes mercados en un solo lugar</p>
     <div class="search-bar">
-      <input type="text" id="busqueda" placeholder="🔍 Buscar productos... Ej: tomate, pollo, leche" />
-      <button onclick="buscar()">Buscar</button>
+      <input type="text" id="busqueda" placeholder="✦ Buscar productos... Ej: tomate, pollo, leche" />
+      <button onclick="buscar()">✦ Buscar</button>
     </div>
   </div>
 
@@ -657,7 +842,7 @@
     </select>
 
     <button class="btn-comparar" id="btnComparar" onclick="compararTodos()">
-      🔄 Comparar todos
+      ⟳ Comparar todos
     </button>
   </div>
 
@@ -666,14 +851,14 @@
   ═══════════════════════════════════════════════════════════════ -->
   <div class="contenido">
     <div class="resultados-info" id="info">
-      <span>Cargando productos...</span>
+      <span>✦ Cargando productos...</span>
       <span class="badge-cantidad" id="total-productos">0</span>
     </div>
     <div id="resultados"></div>
   </div>
 
   <footer>
-    <strong>MercadosApp</strong> — Conectando compradores con los mejores precios ✨
+    <strong>✦ MercadosApp</strong> — Conectando compradores con los mejores precios ✦
   </footer>
 
   <!-- ═══════════════════════════════════════════════════════════════
@@ -703,16 +888,26 @@
       ];
 
       const productos = [
-        { id: 'p1', nombre: 'Tomate chonto', categoria: 'Verduras', unidad: 'kg', precio: 2800, precioBase: 2800, mercadoId: 'm1', oferta: null, emoji: '🍅', fecha: new Date().toISOString(), activo: true },
-        { id: 'p2', nombre: 'Papa criolla', categoria: 'Verduras', unidad: 'kg', precio: 1900, precioBase: 1900, mercadoId: 'm1', oferta: '20% descuento', emoji: '🥔', fecha: new Date().toISOString(), activo: true },
-        { id: 'p3', nombre: 'Pechuga pollo', categoria: 'Carnes', unidad: 'kg', precio: 12000, precioBase: 12000, mercadoId: 'm2', oferta: null, emoji: '🍗', fecha: new Date().toISOString(), activo: true },
-        { id: 'p4', nombre: 'Manzana roja', categoria: 'Frutas', unidad: 'kg', precio: 5000, precioBase: 5000, mercadoId: 'm1', oferta: null, emoji: '🍎', fecha: new Date().toISOString(), activo: true },
-        { id: 'p5', nombre: 'Leche entera', categoria: 'Lácteos', unidad: 'litro', precio: 2200, precioBase: 2200, mercadoId: 'm2', oferta: '2x1', emoji: '🥛', fecha: new Date().toISOString(), activo: true },
-        { id: 'p6', nombre: 'Arroz blanco', categoria: 'Granos', unidad: 'kg', precio: 3200, precioBase: 3200, mercadoId: 'm1', oferta: null, emoji: '🌾', fecha: new Date().toISOString(), activo: true },
-        { id: 'p7', nombre: 'Huevos AA', categoria: 'Lácteos', unidad: 'docena', precio: 13000, precioBase: 13000, mercadoId: 'm2', oferta: null, emoji: '🥚', fecha: new Date().toISOString(), activo: true },
-        { id: 'p8', nombre: 'Aguacate Hass', categoria: 'Frutas', unidad: 'unidad', precio: 1500, precioBase: 1500, mercadoId: 'm1', oferta: null, emoji: '🥑', fecha: new Date().toISOString(), activo: true },
-        { id: 'p9', nombre: 'Pan integral', categoria: 'Otros', unidad: 'unidad', precio: 3200, precioBase: 3200, mercadoId: 'm2', oferta: null, emoji: '🍞', fecha: new Date().toISOString(), activo: true },
-        { id: 'p10', nombre: 'Jugo de naranja', categoria: 'Bebidas', unidad: 'litro', precio: 4500, precioBase: 4500, mercadoId: 'm1', oferta: null, emoji: '🧃', fecha: new Date().toISOString(), activo: true },
+        { id: 'p1', nombre: 'Tomate chonto', categoria: 'Verduras', unidad: 'kg', precio: 2800, precioBase: 2800,
+          mercadoId: 'm1', oferta: null, emoji: '🍅', fecha: new Date().toISOString(), activo: true },
+        { id: 'p2', nombre: 'Papa criolla', categoria: 'Verduras', unidad: 'kg', precio: 1900, precioBase: 1900,
+          mercadoId: 'm1', oferta: '20% descuento', emoji: '🥔', fecha: new Date().toISOString(), activo: true },
+        { id: 'p3', nombre: 'Pechuga pollo', categoria: 'Carnes', unidad: 'kg', precio: 12000, precioBase: 12000,
+          mercadoId: 'm2', oferta: null, emoji: '🍗', fecha: new Date().toISOString(), activo: true },
+        { id: 'p4', nombre: 'Manzana roja', categoria: 'Frutas', unidad: 'kg', precio: 5000, precioBase: 5000,
+          mercadoId: 'm1', oferta: null, emoji: '🍎', fecha: new Date().toISOString(), activo: true },
+        { id: 'p5', nombre: 'Leche entera', categoria: 'Lácteos', unidad: 'litro', precio: 2200, precioBase: 2200,
+          mercadoId: 'm2', oferta: '2x1', emoji: '🥛', fecha: new Date().toISOString(), activo: true },
+        { id: 'p6', nombre: 'Arroz blanco', categoria: 'Granos', unidad: 'kg', precio: 3200, precioBase: 3200,
+          mercadoId: 'm1', oferta: null, emoji: '🌾', fecha: new Date().toISOString(), activo: true },
+        { id: 'p7', nombre: 'Huevos AA', categoria: 'Lácteos', unidad: 'docena', precio: 13000, precioBase: 13000,
+          mercadoId: 'm2', oferta: null, emoji: '🥚', fecha: new Date().toISOString(), activo: true },
+        { id: 'p8', nombre: 'Aguacate Hass', categoria: 'Frutas', unidad: 'unidad', precio: 1500, precioBase: 1500,
+          mercadoId: 'm1', oferta: null, emoji: '🥑', fecha: new Date().toISOString(), activo: true },
+        { id: 'p9', nombre: 'Pan integral', categoria: 'Otros', unidad: 'unidad', precio: 3200, precioBase: 3200,
+          mercadoId: 'm2', oferta: null, emoji: '🍞', fecha: new Date().toISOString(), activo: true },
+        { id: 'p10', nombre: 'Jugo de naranja', categoria: 'Bebidas', unidad: 'litro', precio: 4500, precioBase: 4500,
+          mercadoId: 'm1', oferta: null, emoji: '🧃', fecha: new Date().toISOString(), activo: true },
       ];
 
       localStorage.setItem('mercadosapp_mercados', JSON.stringify(mercados));
@@ -720,7 +915,7 @@
       localStorage.setItem('mercadosapp_usuarios', JSON.stringify(usuarios));
       localStorage.setItem('mercadosapp_init', '1');
 
-      console.log('✅ Datos iniciales cargados');
+      console.log('✦ Datos iniciales cargados');
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -745,10 +940,10 @@
 
     function toast(msg, error = false) {
       const el = document.getElementById('toast');
-      el.textContent = msg;
+      el.innerHTML = (error ? '⚠️ ' : '✦ ') + msg;
       el.className = 'toast visible' + (error ? ' error' : '');
       clearTimeout(el._timeout);
-      el._timeout = setTimeout(() => el.className = 'toast', 3000);
+      el._timeout = setTimeout(() => el.className = 'toast', 3500);
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -758,7 +953,7 @@
     function cargarMercadosFiltro() {
       const mercados = obtenerMercados();
       const select = document.getElementById('filtroMercado');
-      select.innerHTML = '<option value="">Todos los mercados</option>';
+      select.innerHTML = '<option value="">✦ Todos los mercados</option>';
       mercados.forEach(m => {
         const opt = document.createElement('option');
         opt.value = m.id;
@@ -775,7 +970,6 @@
       return 'hace ' + Math.floor(seg / 86400) + ' días';
     }
 
-    // Variable para saber si estamos en modo "comparar todos"
     let modoComparar = false;
 
     function compararTodos() {
@@ -783,27 +977,22 @@
       const selectMercado = document.getElementById('filtroMercado');
 
       if (modoComparar) {
-        // Desactivar comparar: volver al filtro actual
         modoComparar = false;
         btn.classList.remove('activo');
-        btn.textContent = '🔄 Comparar todos';
-        // Restaurar el valor del select (si tenía uno guardado)
+        btn.textContent = '⟳ Comparar todos';
         if (selectMercado.dataset.anterior) {
           selectMercado.value = selectMercado.dataset.anterior;
         } else {
           selectMercado.value = '';
         }
-        toast('🔍 Filtro restaurado');
+        toast('✦ Filtro restaurado');
       } else {
-        // Activar comparar: mostrar TODOS los productos
         modoComparar = true;
         btn.classList.add('activo');
-        btn.textContent = '✖ Cerrar comparación';
-        // Guardar el valor actual del select
+        btn.textContent = '✕ Cerrar comparación';
         selectMercado.dataset.anterior = selectMercado.value;
-        // Seleccionar "Todos"
         selectMercado.value = '';
-        toast('🔄 Mostrando todos los productos para comparar');
+        toast('⟳ Mostrando todos los productos para comparar');
       }
 
       buscar();
@@ -817,7 +1006,6 @@
 
       let productos = getProductosActivos();
 
-      // Si NO está en modo comparar, aplicar filtro de mercado
       if (!modoComparar && mercadoId) {
         productos = productos.filter(p => p.mercadoId === mercadoId);
       }
@@ -825,17 +1013,14 @@
       if (texto) productos = productos.filter(p => p.nombre.toLowerCase().includes(texto));
       if (categoria) productos = productos.filter(p => p.categoria === categoria);
 
-      // Ordenar
       if (orden === 'precio_asc') productos.sort((a, b) => a.precio - b.precio);
       if (orden === 'precio_desc') productos.sort((a, b) => b.precio - a.precio);
       if (orden === 'reciente') productos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
       if (orden === 'nombre') productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-      // Actualizar info
       document.getElementById('total-productos').textContent = productos.length;
       const infoEl = document.getElementById('info');
 
-      // Determinar el nombre del mercado filtrado
       let mercadoNombre = '';
       if (mercadoId && !modoComparar) {
         const mercados = obtenerMercados();
@@ -844,11 +1029,11 @@
       }
 
       if (productos.length === 0) {
-        infoEl.innerHTML = '<span>🔍 No se encontraron productos' + mercadoNombre + '</span><span class="badge-cantidad">0</span>';
+        infoEl.innerHTML = '<span>✦ No se encontraron productos' + mercadoNombre + '</span><span class="badge-cantidad">0</span>';
       } else {
-        let mensaje = '📦 Mostrando <strong>' + productos.length + '</strong> producto' + (productos.length !== 1 ? 's' : '');
+        let mensaje = '✦ Mostrando <strong>' + productos.length + '</strong> producto' + (productos.length !== 1 ? 's' : '');
         if (modoComparar) {
-          mensaje += ' <span style="color:var(--accent);font-weight:700;">🔄 MODO COMPARAR</span>';
+          mensaje += ' <span class="modo-comparar">⟳ MODO COMPARAR</span>';
         }
         mensaje += mercadoNombre;
         if (texto) mensaje += ' para "<strong>' + texto + '</strong>"';
@@ -857,7 +1042,6 @@
         infoEl.innerHTML = mensaje + '<span class="badge-cantidad">' + productos.length + '</span>';
       }
 
-      // Agrupar por categoría
       const categorias = {};
       const mercados = obtenerMercados();
 
@@ -871,16 +1055,15 @@
 
       if (productos.length === 0) {
         container.innerHTML = `
-            <div class="vacio">
-              <div class="icono">🔍</div>
-              <h3>No encontramos resultados</h3>
-              <p>Intenta con otras palabras o quita los filtros</p>
-            </div>
-          `;
+              <div class="vacio">
+                <span class="icono">✦</span>
+                <h3>No encontramos resultados</h3>
+                <p>Intenta con otras palabras o quita los filtros</p>
+              </div>
+            `;
         return;
       }
 
-      // Ordenar categorías
       const ordenCategorias = ['Frutas', 'Verduras', 'Carnes', 'Lácteos', 'Granos', 'Bebidas', 'Otros'];
       const categoriasOrdenadas = Object.keys(categorias).sort((a, b) => {
         const ia = ordenCategorias.indexOf(a);
@@ -902,46 +1085,45 @@
         'Otros': '📦'
       };
 
-      categoriasOrdenadas.forEach(cat => {
+      categoriasOrdenadas.forEach((cat, catIndex) => {
         const items = categorias[cat];
         html += `
-            <div class="categoria-section">
-              <div class="categoria-header">
-                <span class="icono">${emojisCat[cat] || '📦'}</span>
-                <h2>${cat}</h2>
-                <span class="count">${items.length}</span>
-              </div>
-              <div class="grid">
-          `;
+              <div class="categoria-section" style="--i:${catIndex}">
+                <div class="categoria-header">
+                  <span class="icono">${emojisCat[cat] || '📦'}</span>
+                  <h2>${cat}</h2>
+                  <span class="count">${items.length}</span>
+                </div>
+                <div class="grid">
+            `;
 
-        items.forEach(p => {
+        items.forEach((p, idx) => {
           const m = mercados.find(x => x.id === p.mercadoId) || { nombre: 'Mercado' };
           const imagen = p.imagenUrl ?
             '<img src="' + p.imagenUrl + '" alt="' + p.nombre + '">' :
             '<span style="font-size:38px">' + (p.emoji || '📦') + '</span>';
 
           html += `
-                <div class="tarjeta">
-                  <div class="tarjeta-imagen">${imagen}</div>
-                  ${p.oferta ? '<div class="badge-oferta">🏷️ ' + p.oferta + '</div>' : ''}
-                  <h3 title="${p.nombre}">${p.nombre}</h3>
-                  <div class="precio">$${Number(p.precio).toLocaleString('es-CO')}<span> / ${p.unidad}</span></div>
-                  <div class="mercado-link">${m.nombre}</div>
-                  <div class="fecha">🕐 ${tiempoRelativo(p.fecha)}</div>
-                </div>
-              `;
+                  <div class="tarjeta" style="--i:${idx}">
+                    <div class="tarjeta-imagen">${imagen}</div>
+                    ${p.oferta ? '<div class="badge-oferta">✦ ' + p.oferta + '</div>' : ''}
+                    <h3 title="${p.nombre}">${p.nombre}</h3>
+                    <div class="precio">$${Number(p.precio).toLocaleString('es-CO')}<span> / ${p.unidad}</span></div>
+                    <div class="mercado-link">${m.nombre}</div>
+                    <div class="fecha">✦ ${tiempoRelativo(p.fecha)}</div>
+                  </div>
+                `;
         });
 
         html += `
+                </div>
               </div>
-            </div>
-          `;
+            `;
       });
 
       container.innerHTML = html;
     }
 
-    // Enter en búsqueda
     document.getElementById('busqueda').addEventListener('keypress', e => {
       if (e.key === 'Enter') buscar();
     });
@@ -954,11 +1136,9 @@
     cargarMercadosFiltro();
     buscar();
 
-    console.log('🛒 MercadosApp — Versión con comparador');
-    console.log('📋 Instrucciones:');
-    console.log('  - Selecciona un mercado para ver sus productos');
-    console.log('  - Haz clic en "Comparar todos" para ver todos los productos');
-    console.log('  - Usa la búsqueda y filtros para encontrar lo que necesitas');
+    console.log('✦ MercadosApp — Versión Futurista');
+    console.log('✦ Modo oscuro con efectos glassmorphism');
+    console.log('✦ Comparador de productos integrado');
   </script>
 
 </body>

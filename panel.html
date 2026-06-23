@@ -80,11 +80,29 @@
     .login-container .alerta { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; }
     .login-container .alerta.error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; display: block; }
 
+    /* ─── ADMIN PANEL (para crear usuarios) ─── */
+    .admin-panel { background: #f0fdf4; border: 2px dashed #166534; border-radius: 12px; padding: 24px; margin-bottom: 30px; }
+    .admin-panel h3 { color: #166534; font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .admin-panel .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .admin-panel .admin-grid input { margin-bottom: 0; }
+    .admin-panel .admin-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .admin-panel .btn-crear { background: #166534; color: white; border: none; padding: 10px 24px; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .admin-panel .btn-crear:hover { background: #14532d; }
+    .admin-panel .btn-ocultar { background: #6b7280; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+    .admin-panel .btn-ocultar:hover { background: #4b5563; }
+    .admin-panel .usuarios-lista { margin-top: 16px; }
+    .admin-panel .usuarios-lista table { font-size: 13px; }
+    .admin-panel .usuarios-lista td { padding: 6px 12px; }
+    .admin-panel .badge-admin { background: #dbeafe; color: #1d4ed8; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+    .admin-panel .btn-eliminar-user { background: #dc2626; color: white; border: none; padding: 2px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+    .admin-panel .btn-eliminar-user:hover { background: #b91c1c; }
+
     @media (max-width: 600px) {
       .panel-header { flex-direction: column; align-items: stretch; }
       .panel-header .btn-verde, .panel-header .btn-amarillo { width: 100%; text-align: center; }
       .acciones { flex-direction: column; }
       .acciones button { width: 100%; }
+      .admin-panel .admin-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -103,7 +121,7 @@
 <!-- ─── LOGIN ─── -->
 <div id="login-section" class="login-container">
   <h1>🔐 Panel de mercader</h1>
-  <p class="subtitulo">Ingresa con tu correo y contraseña para gestionar tus productos</p>
+  <p class="subtitulo">Ingresa con tu correo y contraseña</p>
   <div id="alerta-login" class="alerta"></div>
   <label>Correo electrónico</label>
   <input type="email" id="login-email" placeholder="tu@correo.com" />
@@ -118,6 +136,34 @@
 <!-- ─── PANEL ─── -->
 <div id="panel-section" style="display:none;">
   <div class="panel">
+
+    <!-- ─── ADMIN PANEL (solo visible para el creador) ─── -->
+    <div class="admin-panel" id="admin-panel">
+      <h3>👑 Panel de administración — Crear mercaderes</h3>
+      <p style="font-size:13px;color:#6b7280;margin-bottom:12px;">Genera usuarios y contraseñas para tus mercaderes. Ellos solo podrán iniciar sesión.</p>
+
+      <div class="admin-grid">
+        <input type="text" id="admin-nombre" placeholder="Nombre del mercader" />
+        <input type="email" id="admin-email" placeholder="Correo electrónico" />
+        <input type="text" id="admin-mercado" placeholder="Nombre del mercado" />
+        <input type="text" id="admin-dir" placeholder="Dirección del mercado" />
+      </div>
+
+      <div class="admin-actions">
+        <button class="btn-crear" onclick="crearMercader()">+ Crear mercader</button>
+        <button class="btn-crear" style="background:#ca8a04;" onclick="generarPassword()">🔑 Generar contraseña aleatoria</button>
+        <button class="btn-ocultar" onclick="toggleAdminPanel()">Ocultar panel</button>
+      </div>
+
+      <div id="admin-password-result" style="margin-top:12px;font-size:14px;color:#166534;font-weight:600;"></div>
+
+      <div class="usuarios-lista" id="usuarios-lista">
+        <h4 style="font-size:14px;color:#374151;margin-bottom:8px;">Mercaderes registrados:</h4>
+        <div id="tabla-usuarios"></div>
+      </div>
+    </div>
+
+    <!-- ─── PANEL DE PRODUCTOS ─── -->
     <div class="panel-header">
       <h2>🏪 Mi mercado <span class="sub" id="mercader-nombre"></span></h2>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -205,6 +251,52 @@
 
 <script>
 // ═══════════════════════════════════════════════════════════════════
+//  CONFIGURACIÓN
+// ═══════════════════════════════════════════════════════════════════
+
+// 🔑 CREDENCIALES DEL CREADOR (cámbialas por las tuyas)
+const CREADOR = {
+  email: 'admin@mercadosapp.com',
+  password: 'admin2025'
+};
+
+// ═══════════════════════════════════════════════════════════════════
+//  INICIALIZAR DATOS DE PRUEBA
+// ═══════════════════════════════════════════════════════════════════
+
+function inicializarDatos() {
+  if (localStorage.getItem('mercadosapp_init')) return;
+
+  const mercados = [
+    { id: 'm1', nombre: 'Mercado Central', direccion: 'Calle 10 # 5-23' },
+    { id: 'm2', nombre: 'La Placita Verde', direccion: 'Av. 15 # 8-40' },
+  ];
+
+  const usuarios = [
+    { id: 'u1', nombre: 'Carlos Pérez', email: 'carlos@mercado.com', password: '123456', mercadoId: 'm1' },
+    { id: 'u2', nombre: 'María Gómez', email: 'maria@placita.com', password: '123456', mercadoId: 'm2' },
+  ];
+
+  const productos = [
+    { id: 'p1', nombre: 'Tomate chonto',   categoria: 'Verduras', unidad: 'kg',     precio: 2800,  precioBase: 2800,  mercadoId: 'm1', oferta: null,            emoji: '🍅', fecha: new Date().toISOString(), activo: true },
+    { id: 'p2', nombre: 'Papa criolla',    categoria: 'Verduras', unidad: 'kg',     precio: 1900,  precioBase: 1900,  mercadoId: 'm1', oferta: '20% descuento',  emoji: '🥔', fecha: new Date().toISOString(), activo: true },
+    { id: 'p3', nombre: 'Pechuga pollo',   categoria: 'Carnes',   unidad: 'kg',     precio: 12000, precioBase: 12000, mercadoId: 'm2', oferta: null,            emoji: '🍗', fecha: new Date().toISOString(), activo: true },
+    { id: 'p4', nombre: 'Manzana roja',    categoria: 'Frutas',   unidad: 'kg',     precio: 5000,  precioBase: 5000,  mercadoId: 'm1', oferta: null,            emoji: '🍎', fecha: new Date().toISOString(), activo: true },
+    { id: 'p5', nombre: 'Leche entera',    categoria: 'Lácteos',  unidad: 'litro',  precio: 2200,  precioBase: 2200,  mercadoId: 'm2', oferta: '2x1',           emoji: '🥛', fecha: new Date().toISOString(), activo: true },
+    { id: 'p6', nombre: 'Arroz blanco',    categoria: 'Granos',   unidad: 'kg',     precio: 3200,  precioBase: 3200,  mercadoId: 'm1', oferta: null,            emoji: '🌾', fecha: new Date().toISOString(), activo: true },
+    { id: 'p7', nombre: 'Huevos AA',       categoria: 'Lácteos',  unidad: 'docena', precio: 13000, precioBase: 13000, mercadoId: 'm2', oferta: null,            emoji: '🥚', fecha: new Date().toISOString(), activo: true },
+    { id: 'p8', nombre: 'Aguacate Hass',   categoria: 'Frutas',   unidad: 'unidad', precio: 1500,  precioBase: 1500,  mercadoId: 'm1', oferta: null,            emoji: '🥑', fecha: new Date().toISOString(), activo: true },
+  ];
+
+  localStorage.setItem('mercadosapp_mercados', JSON.stringify(mercados));
+  localStorage.setItem('mercadosapp_productos', JSON.stringify(productos));
+  localStorage.setItem('mercadosapp_usuarios', JSON.stringify(usuarios));
+  localStorage.setItem('mercadosapp_init', '1');
+
+  console.log('✅ Datos iniciales cargados');
+}
+
+// ═══════════════════════════════════════════════════════════════════
 //  FUNCIONES DE DATOS
 // ═══════════════════════════════════════════════════════════════════
 
@@ -222,6 +314,14 @@ function obtenerUsuarios() {
 
 function guardarProductos(productos) {
   localStorage.setItem('mercadosapp_productos', JSON.stringify(productos));
+}
+
+function guardarUsuarios(usuarios) {
+  localStorage.setItem('mercadosapp_usuarios', JSON.stringify(usuarios));
+}
+
+function guardarMercados(mercados) {
+  localStorage.setItem('mercadosapp_mercados', JSON.stringify(mercados));
 }
 
 function getProductosActivos() {
@@ -274,10 +374,153 @@ document.querySelectorAll('.modal-fondo').forEach(el => {
 });
 
 // ═══════════════════════════════════════════════════════════════════
+//  ADMIN PANEL - CREAR MERCADERES
+// ═══════════════════════════════════════════════════════════════════
+
+let adminPanelVisible = true;
+
+function toggleAdminPanel() {
+  adminPanelVisible = !adminPanelVisible;
+  document.getElementById('admin-panel').style.display = adminPanelVisible ? 'block' : 'none';
+}
+
+function generarPassword() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+  let pass = "";
+  for (let i = 0; i < 8; i++) {
+    pass += chars[Math.floor(Math.random() * chars.length)];
+  }
+  document.getElementById('admin-password-result').textContent = '🔑 Contraseña generada: ' + pass;
+  return pass;
+}
+
+function crearMercader() {
+  const nombre   = document.getElementById('admin-nombre').value.trim();
+  const email    = document.getElementById('admin-email').value.trim();
+  const mercado  = document.getElementById('admin-mercado').value.trim();
+  const direccion = document.getElementById('admin-dir').value.trim();
+
+  if (!nombre || !email || !mercado || !direccion) {
+    toast('Completa todos los campos', true);
+    return;
+  }
+
+  // Validar email
+  if (!email.includes('@') || !email.includes('.')) {
+    toast('Correo electrónico no válido', true);
+    return;
+  }
+
+  const usuarios = obtenerUsuarios();
+  if (usuarios.find(u => u.email === email)) {
+    toast('Ese correo ya está registrado', true);
+    return;
+  }
+
+  const mercados = obtenerMercados();
+  if (mercados.find(m => m.nombre.toLowerCase() === mercado.toLowerCase())) {
+    toast('Ya existe un mercado con ese nombre', true);
+    return;
+  }
+
+  // Generar contraseña automáticamente
+  const password = generarPassword();
+
+  // Crear mercado
+  const mercadoId = 'm_' + Date.now();
+  mercados.push({ id: mercadoId, nombre: mercado, direccion: direccion });
+  guardarMercados(mercados);
+
+  // Crear usuario
+  const usuario = {
+    id: 'u_' + Date.now(),
+    nombre: nombre,
+    email: email,
+    password: password,
+    mercadoId: mercadoId
+  };
+  usuarios.push(usuario);
+  guardarUsuarios(usuarios);
+
+  // Mostrar credenciales
+  document.getElementById('admin-password-result').innerHTML = 
+    '✅ Mercader creado!<br>' +
+    '👤 <strong>' + nombre + '</strong><br>' +
+    '📧 ' + email + '<br>' +
+    '🔑 <strong style="font-size:18px;color:#15803d;">' + password + '</strong><br>' +
+    '<span style="font-size:12px;color:#6b7280;">📋 Copia esta contraseña y entrégasela al mercader</span>';
+
+  // Limpiar campos
+  document.getElementById('admin-nombre').value = '';
+  document.getElementById('admin-email').value = '';
+  document.getElementById('admin-mercado').value = '';
+  document.getElementById('admin-dir').value = '';
+
+  toast('✅ Mercader creado exitosamente');
+  renderTablaUsuarios();
+}
+
+function renderTablaUsuarios() {
+  const usuarios = obtenerUsuarios();
+  const mercados = obtenerMercados();
+  const container = document.getElementById('tabla-usuarios');
+
+  if (usuarios.length === 0) {
+    container.innerHTML = '<p style="color:#9ca3af;font-size:13px;">No hay mercaderes registrados</p>';
+    return;
+  }
+
+  let html = '<table style="width:100%;font-size:13px;">';
+  html += '<thead><tr><th>Mercader</th><th>Email</th><th>Mercado</th><th>Contraseña</th><th></th></tr></thead><tbody>';
+  usuarios.forEach(u => {
+    const m = mercados.find(x => x.id === u.mercadoId);
+    html += '<tr>' +
+      '<td><strong>' + u.nombre + '</strong></td>' +
+      '<td>' + u.email + '</td>' +
+      '<td>' + (m ? m.nombre : '—') + '</td>' +
+      '<td><code style="background:#f3f4f6;padding:2px 8px;border-radius:4px;font-size:12px;">' + u.password + '</code></td>' +
+      '<td><button class="btn-eliminar-user" onclick="eliminarMercader(\'' + u.id + '\')">🗑️</button></td>' +
+      '</tr>';
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+function eliminarMercader(id) {
+  if (!confirm('¿Eliminar este mercader y su mercado?')) return;
+
+  let usuarios = obtenerUsuarios();
+  const usuario = usuarios.find(u => u.id === id);
+  if (!usuario) return;
+
+  // Eliminar usuario
+  usuarios = usuarios.filter(u => u.id !== id);
+  guardarUsuarios(usuarios);
+
+  // Eliminar su mercado
+  let mercados = obtenerMercados();
+  mercados = mercados.filter(m => m.id !== usuario.mercadoId);
+  guardarMercados(mercados);
+
+  // Eliminar sus productos
+  let productos = obtenerProductos();
+  productos = productos.filter(p => p.mercadoId !== usuario.mercadoId);
+  guardarProductos(productos);
+
+  toast('🗑️ Mercader eliminado');
+  renderTablaUsuarios();
+  // Si el usuario eliminado era el que estaba logueado, cerrar sesión
+  const sesion = getSesion();
+  if (sesion && sesion.id === id) {
+    cerrarSesion();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
 //  LOGIN
 // ═══════════════════════════════════════════════════════════════════
 
-function mostrarAlerta(msg) {
+function mostrarAlertaLogin(msg) {
   const el = document.getElementById('alerta-login');
   el.textContent = msg;
   el.className = 'alerta error';
@@ -288,15 +531,31 @@ function iniciarSesion() {
   const pass = document.getElementById('login-pass').value;
 
   if (!email || !pass) {
-    mostrarAlerta('Completa todos los campos');
+    mostrarAlertaLogin('Completa todos los campos');
     return;
   }
 
   const usuarios = obtenerUsuarios();
+
+  // Verificar si es el creador
+  if (email === CREADOR.email && pass === CREADOR.password) {
+    // El creador inicia sesión como usuario especial
+    const usuarioCreador = {
+      id: 'creador',
+      nombre: 'Administrador',
+      email: CREADOR.email,
+      mercadoId: null,
+      esCreador: true
+    };
+    guardarSesion(usuarioCreador);
+    mostrarPanel();
+    return;
+  }
+
   const usuario = usuarios.find(u => u.email === email && u.password === pass);
 
   if (!usuario) {
-    mostrarAlerta('Correo o contraseña incorrectos');
+    mostrarAlertaLogin('Correo o contraseña incorrectos');
     return;
   }
 
@@ -323,9 +582,17 @@ function mostrarPanel() {
   document.getElementById('nombre-usuario').textContent = sesion.nombre;
   document.getElementById('btn-salir').style.display = 'inline-block';
 
-  const mercados = obtenerMercados();
-  const miMercado = mercados.find(m => m.id === sesion.mercadoId);
-  document.getElementById('mercader-nombre').textContent = miMercado ? '— ' + miMercado.nombre : '';
+  // Mostrar panel de admin SOLO si es el creador
+  if (sesion.esCreador) {
+    document.getElementById('admin-panel').style.display = 'block';
+    document.getElementById('mercader-nombre').textContent = '— Panel de administración';
+    renderTablaUsuarios();
+  } else {
+    document.getElementById('admin-panel').style.display = 'none';
+    const mercados = obtenerMercados();
+    const miMercado = mercados.find(m => m.id === sesion.mercadoId);
+    document.getElementById('mercader-nombre').textContent = miMercado ? '— ' + miMercado.nombre : '';
+  }
 
   renderTabla();
 }
@@ -346,19 +613,31 @@ function renderTabla() {
   const sesion = getSesion();
   if (!sesion) return;
 
-  const productos = getProductosActivos().filter(p => p.mercadoId === sesion.mercadoId);
+  // Si es el creador, mostrar todos los productos de todos los mercados
+  let productos;
+  if (sesion.esCreador) {
+    productos = getProductosActivos();
+  } else {
+    productos = getProductosActivos().filter(p => p.mercadoId === sesion.mercadoId);
+  }
+
   const tbody = document.getElementById('tabla-productos');
 
   if (productos.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5"><div class="vacio"><div class="icono">📦</div><p>No tienes productos aún. ¡Agrega el primero!</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5"><div class="vacio"><div class="icono">📦</div><p>No hay productos disponibles</p></div></td></tr>';
     return;
   }
 
+  const mercados = obtenerMercados();
+
   tbody.innerHTML = productos.map(p => {
+    const m = mercados.find(x => x.id === p.mercadoId);
+    const mercadoNombre = m ? m.nombre : 'Sin mercado';
     return '<tr>' +
       '<td class="emoji-col">' + (p.emoji || '📦') + '</td>' +
       '<td><strong>' + p.nombre + '</strong><br><small style="color:#9ca3af">' + p.unidad + '</small></td>' +
-      '<td><span class="badge badge-cat">' + p.categoria + '</span></td>' +
+      '<td>' + (sesion.esCreador ? '<span style="color:#166534;font-weight:500;">' + mercadoNombre + '</span><br>' : '') +
+      '<span class="badge badge-cat">' + p.categoria + '</span></td>' +
       '<td class="precio-col">$' + Number(p.precio).toLocaleString('es-CO') + (p.oferta ? '<br><span class="badge badge-oferta">🏷️ ' + p.oferta + '</span>' : '') + '</td>' +
       '<td><div class="acciones">' +
         '<button class="btn-gris" style="padding:4px 10px;font-size:12px;" onclick="editarProducto(\'' + p.id + '\')">✏️ Editar</button>' +
@@ -378,6 +657,33 @@ function abrirFormProducto(id) {
 
   document.getElementById('prod-id').value = id || '';
 
+  // Si es creador, mostrar select de mercado
+  if (sesion.esCreador) {
+    const mercados = obtenerMercados();
+    const selectContainer = document.getElementById('prod-mercado-container');
+    if (!selectContainer) {
+      // Crear el select si no existe
+      const container = document.createElement('div');
+      container.id = 'prod-mercado-container';
+      container.innerHTML = '<label>Mercado *</label><select id="prod-mercado"></select>';
+      const modal = document.querySelector('#modal-producto .modal');
+      const botones = modal.querySelector('.modal-botones');
+      modal.insertBefore(container, botones);
+    }
+    const select = document.getElementById('prod-mercado');
+    select.innerHTML = '';
+    mercados.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m.id;
+      opt.textContent = m.nombre;
+      select.appendChild(opt);
+    });
+    document.getElementById('prod-mercado-container').style.display = 'block';
+  } else {
+    const container = document.getElementById('prod-mercado-container');
+    if (container) container.style.display = 'none';
+  }
+
   if (id) {
     const p = obtenerProductos().find(x => x.id === id);
     if (!p) { toast('Producto no encontrado', true); return; }
@@ -387,6 +693,9 @@ function abrirFormProducto(id) {
     document.getElementById('prod-precio').value = p.precioBase || p.precio;
     document.getElementById('prod-unidad').value = p.unidad;
     document.getElementById('prod-emoji').value = p.emoji || '';
+    if (sesion.esCreador && document.getElementById('prod-mercado')) {
+      document.getElementById('prod-mercado').value = p.mercadoId;
+    }
   } else {
     document.getElementById('titulo-modal').textContent = '➕ Agregar producto';
     document.getElementById('prod-nombre').value = '';
@@ -410,6 +719,14 @@ function guardarProducto() {
   const unidad    = document.getElementById('prod-unidad').value;
   const emoji     = document.getElementById('prod-emoji').value.trim() || EMOJIS[cat] || '📦';
 
+  let mercadoId;
+  if (sesion.esCreador) {
+    mercadoId = document.getElementById('prod-mercado').value;
+    if (!mercadoId) { toast('Selecciona un mercado', true); return; }
+  } else {
+    mercadoId = sesion.mercadoId;
+  }
+
   if (!nombre || !precio || precio <= 0) {
     toast('Completa nombre y precio correctamente', true);
     return;
@@ -419,7 +736,7 @@ function guardarProducto() {
   const ahora = new Date().toISOString();
 
   if (id) {
-    productos = productos.map(p => p.id === id ? { ...p, nombre, categoria: cat, precio, precioBase: precio, unidad, emoji, fecha: ahora } : p);
+    productos = productos.map(p => p.id === id ? { ...p, nombre, categoria: cat, precio, precioBase: precio, unidad, emoji, mercadoId, fecha: ahora } : p);
     toast('✅ Producto actualizado');
   } else {
     productos.push({
@@ -430,7 +747,7 @@ function guardarProducto() {
       precioBase: precio,
       unidad,
       emoji,
-      mercadoId: sesion.mercadoId,
+      mercadoId: mercadoId,
       oferta: null,
       fecha: ahora,
       activo: true
@@ -444,7 +761,7 @@ function guardarProducto() {
 }
 
 function eliminarProducto(id) {
-  if (!confirm('¿Eliminar este producto de tu catálogo?')) return;
+  if (!confirm('¿Eliminar este producto del catálogo?')) return;
   let productos = obtenerProductos();
   productos = productos.map(p => p.id === id ? { ...p, activo: false } : p);
   guardarProductos(productos);
@@ -460,9 +777,15 @@ function abrirFormOferta() {
   const sesion = getSesion();
   if (!sesion) return;
 
-  const productos = getProductosActivos().filter(p => p.mercadoId === sesion.mercadoId);
+  let productos;
+  if (sesion.esCreador) {
+    productos = getProductosActivos();
+  } else {
+    productos = getProductosActivos().filter(p => p.mercadoId === sesion.mercadoId);
+  }
+
   if (productos.length === 0) {
-    toast('❌ No tienes productos para poner en oferta', true);
+    toast('❌ No hay productos para poner en oferta', true);
     return;
   }
 
@@ -497,6 +820,12 @@ function guardarOferta() {
   const prod = productos.find(p => p.id === prodId);
   if (!prod) { toast('Producto no encontrado', true); return; }
 
+  // Si es mercader normal, verificar que el producto sea suyo
+  if (!sesion.esCreador && prod.mercadoId !== sesion.mercadoId) {
+    toast('No tienes permiso para modificar este producto', true);
+    return;
+  }
+
   const precioBase = prod.precioBase || prod.precio;
   if (precioOferta >= precioBase) {
     toast('El precio de oferta debe ser menor al precio base ($' + Number(precioBase).toLocaleString('es-CO') + ')', true);
@@ -521,11 +850,18 @@ function verificarSesion() {
   }
 }
 
+// ═══════════════════════════════════════════════════════════════════
+//  INICIO
+// ═══════════════════════════════════════════════════════════════════
+
+inicializarDatos();
 verificarSesion();
 
+console.log('👑 CREADOR:');
+console.log('  📧 admin@mercadosapp.com  🔑 admin2025');
 console.log('👤 Mercaderes de prueba:');
-console.log('  carlos@mercado.com / 123456');
-console.log('  maria@placita.com / 123456');
+console.log('  📧 carlos@mercado.com  🔑 123456');
+console.log('  📧 maria@placita.com   🔑 123456');
 </script>
 </body>
 </html>

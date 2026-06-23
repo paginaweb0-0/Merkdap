@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MercadosApp — Panel de mercader</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8faf8; color: #1a2e1a; min-height: 100vh; }
+
+    nav { background: #166534; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    nav .logo { color: white; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    nav .logo:hover { opacity: 0.9; }
+    nav .nav-links { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    nav .nav-links a { color: #bbf7d0; text-decoration: none; font-size: 14px; cursor: pointer; }
+    nav .nav-links a:hover { color: white; }
+    nav .nav-links .usuario-info { color: #bbf7d0; font-size: 13px; }
+    nav .nav-links .usuario-info strong { color: white; }
+    nav .btn-salir { background: rgba(255,255,255,0.15); color: white; border: none; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+    nav .btn-salir:hover { background: rgba(255,255,255,0.25); }
+
+    .panel { max-width: 1100px; margin: 0 auto; padding: 24px; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+    .panel-header h2 { font-size: 22px; color: #166534; display: flex; align-items: center; gap: 10px; }
+    .panel-header .sub { font-size: 16px; font-weight: 400; color: #6b7280; }
+    .panel-header .btn-verde { background: #166534; color: white; border: none; padding: 10px 20px; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .panel-header .btn-verde:hover { background: #14532d; }
+    .panel-header .btn-amarillo { background: #ca8a04; color: white; border: none; padding: 10px 20px; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .panel-header .btn-amarillo:hover { background: #a16207; }
+
+    /* ─── TABLA ─── */
+    .tabla-wrap { background: white; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    thead { background: #f9fafb; }
+    th { text-align: left; padding: 10px 14px; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.04em; }
+    td { padding: 10px 14px; border-top: 1px solid #f3f4f6; vertical-align: middle; }
+    tr:hover td { background: #f9fafb; }
+    .emoji-col { font-size: 22px; }
+    .precio-col { font-weight: 700; color: #166534; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-oferta { background: #fef9c3; color: #854d0e; }
+    .badge-cat { background: #eff6ff; color: #1d4ed8; }
+    .acciones { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    /* ─── MODAL ─── */
+    .modal-fondo { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; display: none; align-items: center; justify-content: center; padding: 16px; }
+    .modal-fondo.abierto { display: flex; }
+    .modal { background: white; border-radius: 16px; width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto; padding: 28px; }
+    .modal h2 { font-size: 18px; margin-bottom: 18px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 4px; }
+    input, select, textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #d1d5db; border-radius: 9px; font-size: 14px; outline: none; margin-bottom: 14px; font-family: inherit; }
+    input:focus, select:focus, textarea:focus { border-color: #166534; }
+    .modal-botones { display: flex; gap: 10px; margin-top: 6px; }
+    .modal-botones button { flex: 1; }
+    .btn-gris { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; padding: 10px; border-radius: 9px; font-size: 14px; cursor: pointer; transition: background 0.2s; }
+    .btn-gris:hover { background: #e5e7eb; }
+    .btn-rojo { background: #dc2626; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; transition: background 0.2s; }
+    .btn-rojo:hover { background: #b91c1c; }
+
+    /* ─── TOAST ─── */
+    .toast { position: fixed; top: 80px; right: 20px; background: #166534; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; z-index: 200; transform: translateX(200px); opacity: 0; transition: all 0.3s; max-width: 340px; }
+    .toast.visible { transform: translateX(0); opacity: 1; }
+    .toast.error { background: #dc2626; }
+
+    .vacio { text-align: center; padding: 50px 20px; color: #9ca3af; }
+    .vacio .icono { font-size: 44px; margin-bottom: 10px; }
+
+    /* ─── LOGIN ─── */
+    .login-container { max-width: 400px; margin: 60px auto; background: white; border-radius: 16px; border: 1px solid #e5e7eb; padding: 36px; }
+    .login-container h1 { font-size: 22px; color: #166534; margin-bottom: 6px; text-align: center; }
+    .login-container .subtitulo { font-size: 14px; color: #6b7280; text-align: center; margin-bottom: 24px; }
+    .login-container label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 4px; }
+    .login-container input { width: 100%; padding: 11px 14px; border: 1.5px solid #d1d5db; border-radius: 9px; font-size: 14px; outline: none; margin-bottom: 16px; }
+    .login-container input:focus { border-color: #166534; }
+    .login-container .btn-login { width: 100%; background: #166534; color: white; border: none; padding: 13px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .login-container .btn-login:hover { background: #14532d; }
+    .login-container .volver { display: block; text-align: center; margin-top: 16px; color: #6b7280; font-size: 13px; }
+    .login-container .volver a { color: #166534; font-weight: 600; text-decoration: none; }
+    .login-container .volver a:hover { text-decoration: underline; }
+    .login-container .alerta { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; }
+    .login-container .alerta.error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; display: block; }
+
+    @media (max-width: 600px) {
+      .panel-header { flex-direction: column; align-items: stretch; }
+      .panel-header .btn-verde, .panel-header .btn-amarillo { width: 100%; text-align: center; }
+      .acciones { flex-direction: column; }
+      .acciones button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <span class="logo" onclick="window.location.href='index.html'">🛒 MercadosApp</span>
+  <div class="nav-links">
+    <a href="index.html">← Ver precios</a>
+    <span class="usuario-info" id="usuario-info" style="display:none;">👤 <strong id="nombre-usuario"></strong></span>
+    <button class="btn-salir" id="btn-salir" onclick="cerrarSesion()" style="display:none;">Cerrar sesión</button>
+  </div>
+</nav>
+
+<!-- ─── LOGIN ─── -->
+<div id="login-section" class="login-container">
+  <h1>🔐 Panel de mercader</h1>
+  <p class="subtitulo">Ingresa con tu correo y contraseña para gestionar tus productos</p>
+  <div id="alerta-login" class="alerta"></div>
+  <label>Correo electrónico</label>
+  <input type="email" id="login-email" placeholder="tu@correo.com" />
+  <label>Contraseña</label>
+  <input type="password" id="login-pass" placeholder="Tu contraseña" />
+  <button class="btn-login" onclick="iniciarSesion()">Ingresar al panel</button>
+  <div class="volver">
+    <a href="index.html">← Volver a buscar precios</a>
+  </div>
+</div>
+
+<!-- ─── PANEL ─── -->
+<div id="panel-section" style="display:none;">
+  <div class="panel">
+    <div class="panel-header">
+      <h2>🏪 Mi mercado <span class="sub" id="mercader-nombre"></span></h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn-verde" onclick="abrirFormProducto()">+ Agregar producto</button>
+        <button class="btn-amarillo" onclick="abrirFormOferta()">🏷️ Crear oferta</button>
+      </div>
+    </div>
+
+    <div class="tabla-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-productos">
+          <tr><td colspan="5"><div class="vacio"><div class="icono">📦</div><p>No tienes productos aún. ¡Agrega el primero!</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MODAL PRODUCTO ─── -->
+<div class="modal-fondo" id="modal-producto">
+  <div class="modal">
+    <h2 id="titulo-modal">Agregar producto</h2>
+    <input type="hidden" id="prod-id" />
+    <label>Nombre del producto *</label>
+    <input type="text" id="prod-nombre" placeholder="Ej: Tomate chonto" />
+    <label>Categoría *</label>
+    <select id="prod-cat">
+      <option value="Frutas">🍎 Frutas</option>
+      <option value="Verduras" selected>🥦 Verduras</option>
+      <option value="Carnes">🍗 Carnes</option>
+      <option value="Lácteos">🥛 Lácteos</option>
+      <option value="Granos">🌾 Granos</option>
+      <option value="Bebidas">🧃 Bebidas</option>
+      <option value="Otros">📦 Otros</option>
+    </select>
+    <label>Precio *</label>
+    <input type="number" id="prod-precio" placeholder="0" min="0" step="0.01" />
+    <label>Unidad de medida *</label>
+    <select id="prod-unidad">
+      <option value="kg">kg (kilogramo)</option>
+      <option value="gr">gr (gramo)</option>
+      <option value="litro">litro</option>
+      <option value="unidad">unidad</option>
+      <option value="docena">docena</option>
+      <option value="bolsa">bolsa</option>
+      <option value="libra">libra</option>
+    </select>
+    <label>Emoji</label>
+    <input type="text" id="prod-emoji" placeholder="🍅" maxlength="4" />
+    <div class="modal-botones">
+      <button class="btn-gris" onclick="cerrarModal('modal-producto')">Cancelar</button>
+      <button class="btn-verde" onclick="guardarProducto()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MODAL OFERTA ─── -->
+<div class="modal-fondo" id="modal-oferta">
+  <div class="modal">
+    <h2>🏷️ Crear oferta</h2>
+    <label>Producto *</label>
+    <select id="oferta-producto"></select>
+    <label>Precio de oferta * (menor al precio base)</label>
+    <input type="number" id="oferta-precio" placeholder="0" min="0" step="0.01" />
+    <label>Descripción de la oferta *</label>
+    <input type="text" id="oferta-desc" placeholder='Ej: "2x1", "20% descuento"' />
+    <div class="modal-botones">
+      <button class="btn-gris" onclick="cerrarModal('modal-oferta')">Cancelar</button>
+      <button class="btn-amarillo" onclick="guardarOferta()">Crear oferta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  FUNCIONES DE DATOS
+// ═══════════════════════════════════════════════════════════════════
+
+function obtenerMercados() {
+  return JSON.parse(localStorage.getItem('mercadosapp_mercados') || '[]');
+}
+
+function obtenerProductos() {
+  return JSON.parse(localStorage.getItem('mercadosapp_productos') || '[]');
+}
+
+function obtenerUsuarios() {
+  return JSON.parse(localStorage.getItem('mercadosapp_usuarios') || '[]');
+}
+
+function guardarProductos(productos) {
+  localStorage.setItem('mercadosapp_productos', JSON.stringify(productos));
+}
+
+function getProductosActivos() {
+  return obtenerProductos().filter(p => p.activo !== false);
+}
+
+function getSesion() {
+  const s = localStorage.getItem('mercadosapp_sesion');
+  return s ? JSON.parse(s) : null;
+}
+
+function guardarSesion(usuario) {
+  localStorage.setItem('mercadosapp_sesion', JSON.stringify(usuario));
+}
+
+function eliminarSesion() {
+  localStorage.removeItem('mercadosapp_sesion');
+}
+
+const EMOJIS = { Frutas:'🍎', Verduras:'🥦', Carnes:'🍗', 'Lácteos':'🥛', Granos:'🌾', Bebidas:'🧃', Otros:'📦' };
+
+// ═══════════════════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════════════════
+
+function toast(msg, error = false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast visible' + (error ? ' error' : '');
+  clearTimeout(el._timeout);
+  el._timeout = setTimeout(() => el.className = 'toast', 3000);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  MODALES
+// ═══════════════════════════════════════════════════════════════════
+
+function abrirModal(id) {
+  document.getElementById(id).classList.add('abierto');
+}
+
+function cerrarModal(id) {
+  document.getElementById(id).classList.remove('abierto');
+}
+
+document.querySelectorAll('.modal-fondo').forEach(el => {
+  el.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('abierto');
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+//  LOGIN
+// ═══════════════════════════════════════════════════════════════════
+
+function mostrarAlerta(msg) {
+  const el = document.getElementById('alerta-login');
+  el.textContent = msg;
+  el.className = 'alerta error';
+}
+
+function iniciarSesion() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+
+  if (!email || !pass) {
+    mostrarAlerta('Completa todos los campos');
+    return;
+  }
+
+  const usuarios = obtenerUsuarios();
+  const usuario = usuarios.find(u => u.email === email && u.password === pass);
+
+  if (!usuario) {
+    mostrarAlerta('Correo o contraseña incorrectos');
+    return;
+  }
+
+  guardarSesion(usuario);
+  mostrarPanel();
+}
+
+// Enter en login
+document.getElementById('login-pass').addEventListener('keypress', e => {
+  if (e.key === 'Enter') iniciarSesion();
+});
+
+// ═══════════════════════════════════════════════════════════════════
+//  PANEL
+// ═══════════════════════════════════════════════════════════════════
+
+function mostrarPanel() {
+  const sesion = getSesion();
+  if (!sesion) return;
+
+  document.getElementById('login-section').style.display = 'none';
+  document.getElementById('panel-section').style.display = 'block';
+  document.getElementById('usuario-info').style.display = 'inline';
+  document.getElementById('nombre-usuario').textContent = sesion.nombre;
+  document.getElementById('btn-salir').style.display = 'inline-block';
+
+  const mercados = obtenerMercados();
+  const miMercado = mercados.find(m => m.id === sesion.mercadoId);
+  document.getElementById('mercader-nombre').textContent = miMercado ? '— ' + miMercado.nombre : '';
+
+  renderTabla();
+}
+
+function cerrarSesion() {
+  eliminarSesion();
+  document.getElementById('login-section').style.display = 'block';
+  document.getElementById('panel-section').style.display = 'none';
+  document.getElementById('usuario-info').style.display = 'none';
+  document.getElementById('btn-salir').style.display = 'none';
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('alerta-login').className = 'alerta';
+  toast('Sesión cerrada');
+}
+
+function renderTabla() {
+  const sesion = getSesion();
+  if (!sesion) return;
+
+  const productos = getProductosActivos().filter(p => p.mercadoId === sesion.mercadoId);
+  const tbody = document.getElementById('tabla-productos');
+
+  if (productos.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5"><div class="vacio"><div class="icono">📦</div><p>No tienes productos aún. ¡Agrega el primero!</p></div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = productos.map(p => {
+    return '<tr>' +
+      '<td class="emoji-col">' + (p.emoji || '📦') + '</td>' +
+      '<td><strong>' + p.nombre + '</strong><br><small style="color:#9ca3af">' + p.unidad + '</small></td>' +
+      '<td><span class="badge badge-cat">' + p.categoria + '</span></td>' +
+      '<td class="precio-col">$' + Number(p.precio).toLocaleString('es-CO') + (p.oferta ? '<br><span class="badge badge-oferta">🏷️ ' + p.oferta + '</span>' : '') + '</td>' +
+      '<td><div class="acciones">' +
+        '<button class="btn-gris" style="padding:4px 10px;font-size:12px;" onclick="editarProducto(\'' + p.id + '\')">✏️ Editar</button>' +
+        '<button class="btn-rojo" style="padding:4px 10px;font-size:12px;" onclick="eliminarProducto(\'' + p.id + '\')">🗑️</button>' +
+      '</div></td>' +
+      '</tr>';
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  CRUD PRODUCTOS
+// ═══════════════════════════════════════════════════════════════════
+
+function abrirFormProducto(id) {
+  const sesion = getSesion();
+  if (!sesion) return;
+
+  document.getElementById('prod-id').value = id || '';
+
+  if (id) {
+    const p = obtenerProductos().find(x => x.id === id);
+    if (!p) { toast('Producto no encontrado', true); return; }
+    document.getElementById('titulo-modal').textContent = '✏️ Editar producto';
+    document.getElementById('prod-nombre').value = p.nombre;
+    document.getElementById('prod-cat').value = p.categoria;
+    document.getElementById('prod-precio').value = p.precioBase || p.precio;
+    document.getElementById('prod-unidad').value = p.unidad;
+    document.getElementById('prod-emoji').value = p.emoji || '';
+  } else {
+    document.getElementById('titulo-modal').textContent = '➕ Agregar producto';
+    document.getElementById('prod-nombre').value = '';
+    document.getElementById('prod-precio').value = '';
+    document.getElementById('prod-unidad').value = 'kg';
+    document.getElementById('prod-emoji').value = '';
+  }
+  abrirModal('modal-producto');
+}
+
+function editarProducto(id) { abrirFormProducto(id); }
+
+function guardarProducto() {
+  const sesion = getSesion();
+  if (!sesion) return;
+
+  const id        = document.getElementById('prod-id').value;
+  const nombre    = document.getElementById('prod-nombre').value.trim();
+  const cat       = document.getElementById('prod-cat').value;
+  const precio    = parseFloat(document.getElementById('prod-precio').value);
+  const unidad    = document.getElementById('prod-unidad').value;
+  const emoji     = document.getElementById('prod-emoji').value.trim() || EMOJIS[cat] || '📦';
+
+  if (!nombre || !precio || precio <= 0) {
+    toast('Completa nombre y precio correctamente', true);
+    return;
+  }
+
+  let productos = obtenerProductos();
+  const ahora = new Date().toISOString();
+
+  if (id) {
+    productos = productos.map(p => p.id === id ? { ...p, nombre, categoria: cat, precio, precioBase: precio, unidad, emoji, fecha: ahora } : p);
+    toast('✅ Producto actualizado');
+  } else {
+    productos.push({
+      id: 'p_' + Date.now(),
+      nombre,
+      categoria: cat,
+      precio,
+      precioBase: precio,
+      unidad,
+      emoji,
+      mercadoId: sesion.mercadoId,
+      oferta: null,
+      fecha: ahora,
+      activo: true
+    });
+    toast('✅ Producto agregado');
+  }
+
+  guardarProductos(productos);
+  cerrarModal('modal-producto');
+  renderTabla();
+}
+
+function eliminarProducto(id) {
+  if (!confirm('¿Eliminar este producto de tu catálogo?')) return;
+  let productos = obtenerProductos();
+  productos = productos.map(p => p.id === id ? { ...p, activo: false } : p);
+  guardarProductos(productos);
+  toast('🗑️ Producto eliminado');
+  renderTabla();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  OFERTAS
+// ═══════════════════════════════════════════════════════════════════
+
+function abrirFormOferta() {
+  const sesion = getSesion();
+  if (!sesion) return;
+
+  const productos = getProductosActivos().filter(p => p.mercadoId === sesion.mercadoId);
+  if (productos.length === 0) {
+    toast('❌ No tienes productos para poner en oferta', true);
+    return;
+  }
+
+  const select = document.getElementById('oferta-producto');
+  select.innerHTML = '';
+  productos.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.nombre + ' (base: $' + Number(p.precioBase || p.precio).toLocaleString('es-CO') + ')';
+    select.appendChild(opt);
+  });
+
+  document.getElementById('oferta-precio').value = '';
+  document.getElementById('oferta-desc').value = '';
+  abrirModal('modal-oferta');
+}
+
+function guardarOferta() {
+  const sesion = getSesion();
+  if (!sesion) return;
+
+  const prodId      = document.getElementById('oferta-producto').value;
+  const precioOferta = parseFloat(document.getElementById('oferta-precio').value);
+  const desc        = document.getElementById('oferta-desc').value.trim();
+
+  if (!prodId || !precioOferta || precioOferta <= 0 || !desc) {
+    toast('Completa todos los campos', true);
+    return;
+  }
+
+  let productos = obtenerProductos();
+  const prod = productos.find(p => p.id === prodId);
+  if (!prod) { toast('Producto no encontrado', true); return; }
+
+  const precioBase = prod.precioBase || prod.precio;
+  if (precioOferta >= precioBase) {
+    toast('El precio de oferta debe ser menor al precio base ($' + Number(precioBase).toLocaleString('es-CO') + ')', true);
+    return;
+  }
+
+  productos = productos.map(p => p.id === prodId ? { ...p, precio: precioOferta, oferta: desc, fecha: new Date().toISOString() } : p);
+  guardarProductos(productos);
+  toast('🏷️ Oferta creada');
+  cerrarModal('modal-oferta');
+  renderTabla();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  VERIFICAR SESIÓN AL CARGAR
+// ═══════════════════════════════════════════════════════════════════
+
+function verificarSesion() {
+  const sesion = getSesion();
+  if (sesion) {
+    mostrarPanel();
+  }
+}
+
+verificarSesion();
+
+console.log('👤 Mercaderes de prueba:');
+console.log('  carlos@mercado.com / 123456');
+console.log('  maria@placita.com / 123456');
+</script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MercadosApp — Busca precios</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8faf8; color: #1a2e1a; min-height: 100vh; }
+
+    nav { background: #166534; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    nav .logo { color: white; font-size: 20px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    nav .nav-links a { color: #bbf7d0; text-decoration: none; font-size: 14px; margin-left: 16px; }
+    nav .nav-links a:hover { color: white; }
+    nav .nav-links .btn-panel { background: #2563eb; color: white; border: none; padding: 6px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s; text-decoration: none; display: inline-block; }
+    nav .nav-links .btn-panel:hover { background: #1d4ed8; }
+
+    .hero { background: linear-gradient(135deg, #15803d, #166534); padding: 50px 24px; text-align: center; color: white; }
+    .hero h1 { font-size: 28px; margin-bottom: 8px; }
+    .hero p { font-size: 15px; color: #bbf7d0; margin-bottom: 24px; }
+    .search-bar { display: flex; gap: 8px; max-width: 540px; margin: 0 auto; }
+    .search-bar input { flex: 1; padding: 12px 16px; border-radius: 10px; border: none; font-size: 15px; outline: none; }
+    .search-bar button { background: #ca8a04; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .search-bar button:hover { background: #a16207; }
+
+    .filtros { background: white; border-bottom: 1px solid #e5e7eb; padding: 12px 24px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .filtros label { font-size: 13px; color: #6b7280; font-weight: 500; }
+    .filtros select { padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; background: white; cursor: pointer; }
+
+    .contenido { max-width: 1100px; margin: 0 auto; padding: 24px; }
+    .resultados-info { font-size: 14px; color: #6b7280; margin-bottom: 14px; }
+    .resultados-info strong { color: #166534; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+
+    .tarjeta { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; transition: box-shadow 0.2s; }
+    .tarjeta:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .tarjeta-imagen { width: 100%; height: 110px; background: #f0fdf4; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 10px; overflow: hidden; }
+    .tarjeta h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+    .precio { font-size: 20px; font-weight: 700; color: #166534; margin: 6px 0 2px; }
+    .precio span { font-size: 12px; color: #9ca3af; font-weight: 400; }
+    .mercado-link { font-size: 12px; color: #166534; font-weight: 500; }
+    .fecha { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+    .badge-oferta { display: inline-block; background: #fef9c3; color: #854d0e; font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 20px; margin-bottom: 4px; }
+    .vacio { text-align: center; padding: 50px 20px; color: #9ca3af; grid-column: 1/-1; }
+    .vacio .icono { font-size: 44px; margin-bottom: 10px; }
+
+    footer { background: #1a2e1a; color: #9ca3af; text-align: center; padding: 20px; margin-top: 40px; font-size: 13px; }
+    footer strong { color: white; }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 22px; }
+      .search-bar { flex-direction: column; }
+      .grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 400px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="logo">🛒 MercadosApp</span>
+  <div class="nav-links">
+    <a href="#">Buscar precios</a>
+    <a href="panel.html" class="btn-panel">🔐 Soy mercader →</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Compara precios de tu mercado</h1>
+  <p>Consulta precios actualizados sin registrarte</p>
+  <div class="search-bar">
+    <input type="text" id="busqueda" placeholder="¿Qué buscas? Ej: tomate, pollo, leche…" />
+    <button onclick="buscar()">Buscar</button>
+  </div>
+</div>
+
+<div class="filtros">
+  <label>Mercado:</label>
+  <select id="filtroMercado" onchange="buscar()">
+    <option value="">Todos</option>
+  </select>
+
+  <label>Categoría:</label>
+  <select id="filtroCategoria" onchange="buscar()">
+    <option value="">Todas</option>
+    <option>Frutas</option><option>Verduras</option><option>Carnes</option>
+    <option>Lácteos</option><option>Granos</option><option>Bebidas</option><option>Otros</option>
+  </select>
+
+  <label>Ordenar:</label>
+  <select id="orden" onchange="buscar()">
+    <option value="precio_asc">Precio: menor a mayor</option>
+    <option value="precio_desc">Precio: mayor a menor</option>
+    <option value="reciente">Más recientes</option>
+  </select>
+</div>
+
+<div class="contenido">
+  <div class="resultados-info" id="info"></div>
+  <div class="grid" id="resultados"></div>
+</div>
+
+<footer><strong>MercadosApp</strong> — Precios claros para todos</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  DATOS INICIALES
+// ═══════════════════════════════════════════════════════════════════
+
+function inicializarDatos() {
+  if (localStorage.getItem('mercadosapp_init')) return;
+
+  const mercados = [
+    { id: 'm1', nombre: 'Mercado Central', direccion: 'Calle 10 # 5-23' },
+    { id: 'm2', nombre: 'La Placita Verde', direccion: 'Av. 15 # 8-40' },
+  ];
+
+  const usuarios = [
+    { id: 'u1', nombre: 'Carlos Pérez', email: 'carlos@mercado.com', password: '123456', mercadoId: 'm1' },
+    { id: 'u2', nombre: 'María Gómez', email: 'maria@placita.com', password: '123456', mercadoId: 'm2' },
+  ];
+
+  const productos = [
+    { id: 'p1', nombre: 'Tomate chonto',   categoria: 'Verduras', unidad: 'kg',     precio: 2800,  precioBase: 2800,  mercadoId: 'm1', oferta: null,            emoji: '🍅', fecha: new Date().toISOString(), activo: true },
+    { id: 'p2', nombre: 'Papa criolla',    categoria: 'Verduras', unidad: 'kg',     precio: 1900,  precioBase: 1900,  mercadoId: 'm1', oferta: '20% descuento',  emoji: '🥔', fecha: new Date().toISOString(), activo: true },
+    { id: 'p3', nombre: 'Pechuga pollo',   categoria: 'Carnes',   unidad: 'kg',     precio: 12000, precioBase: 12000, mercadoId: 'm2', oferta: null,            emoji: '🍗', fecha: new Date().toISOString(), activo: true },
+    { id: 'p4', nombre: 'Manzana roja',    categoria: 'Frutas',   unidad: 'kg',     precio: 5000,  precioBase: 5000,  mercadoId: 'm1', oferta: null,            emoji: '🍎', fecha: new Date().toISOString(), activo: true },
+    { id: 'p5', nombre: 'Leche entera',    categoria: 'Lácteos',  unidad: 'litro',  precio: 2200,  precioBase: 2200,  mercadoId: 'm2', oferta: '2x1',           emoji: '🥛', fecha: new Date().toISOString(), activo: true },
+    { id: 'p6', nombre: 'Arroz blanco',    categoria: 'Granos',   unidad: 'kg',     precio: 3200,  precioBase: 3200,  mercadoId: 'm1', oferta: null,            emoji: '🌾', fecha: new Date().toISOString(), activo: true },
+    { id: 'p7', nombre: 'Huevos AA',       categoria: 'Lácteos',  unidad: 'docena', precio: 13000, precioBase: 13000, mercadoId: 'm2', oferta: null,            emoji: '🥚', fecha: new Date().toISOString(), activo: true },
+    { id: 'p8', nombre: 'Aguacate Hass',   categoria: 'Frutas',   unidad: 'unidad', precio: 1500,  precioBase: 1500,  mercadoId: 'm1', oferta: null,            emoji: '🥑', fecha: new Date().toISOString(), activo: true },
+  ];
+
+  localStorage.setItem('mercadosapp_mercados', JSON.stringify(mercados));
+  localStorage.setItem('mercadosapp_productos', JSON.stringify(productos));
+  localStorage.setItem('mercadosapp_usuarios', JSON.stringify(usuarios));
+  localStorage.setItem('mercadosapp_init', '1');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  FUNCIONES DE DATOS
+// ═══════════════════════════════════════════════════════════════════
+
+function obtenerMercados() {
+  return JSON.parse(localStorage.getItem('mercadosapp_mercados') || '[]');
+}
+
+function obtenerProductos() {
+  return JSON.parse(localStorage.getItem('mercadosapp_productos') || '[]');
+}
+
+function getProductosActivos() {
+  return obtenerProductos().filter(p => p.activo !== false);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  BUSCADOR
+// ═══════════════════════════════════════════════════════════════════
+
+function cargarMercadosFiltro() {
+  const mercados = obtenerMercados();
+  const select = document.getElementById('filtroMercado');
+  select.innerHTML = '<option value="">Todos</option>';
+  mercados.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m.id;
+    opt.textContent = m.nombre;
+    select.appendChild(opt);
+  });
+}
+
+function tiempoRelativo(fecha) {
+  const seg = Math.floor((new Date() - new Date(fecha)) / 1000);
+  if (seg < 60)    return 'hace unos segundos';
+  if (seg < 3600)  return 'hace ' + Math.floor(seg/60) + ' min';
+  if (seg < 86400) return 'hace ' + Math.floor(seg/3600) + ' h';
+  return 'hace ' + Math.floor(seg/86400) + ' días';
+}
+
+function buscar() {
+  const texto     = document.getElementById('busqueda').value.toLowerCase().trim();
+  const mercadoId = document.getElementById('filtroMercado').value;
+  const categoria = document.getElementById('filtroCategoria').value;
+  const orden     = document.getElementById('orden').value;
+
+  let productos = getProductosActivos();
+
+  if (texto)     productos = productos.filter(p => p.nombre.toLowerCase().includes(texto));
+  if (mercadoId) productos = productos.filter(p => p.mercadoId === mercadoId);
+  if (categoria) productos = productos.filter(p => p.categoria === categoria);
+
+  if (orden === 'precio_asc')  productos.sort((a,b) => a.precio - b.precio);
+  if (orden === 'precio_desc') productos.sort((a,b) => b.precio - a.precio);
+  if (orden === 'reciente')    productos.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+
+  document.getElementById('info').innerHTML = productos.length === 0 ? '' :
+    'Se encontraron <strong>' + productos.length + '</strong> producto' + (productos.length !== 1 ? 's' : '') +
+    (texto ? ' para "<strong>' + texto + '</strong>"' : '');
+
+  const contenedor = document.getElementById('resultados');
+  if (productos.length === 0) {
+    contenedor.innerHTML = '<div class="vacio"><div class="icono">🔍</div><p>No se encontraron productos</p><p style="font-size:13px;margin-top:6px;color:#9ca3af;">Intenta con otra palabra o quita los filtros</p></div>';
+    return;
+  }
+
+  const mercados = obtenerMercados();
+  contenedor.innerHTML = productos.map(p => {
+    const m = mercados.find(x => x.id === p.mercadoId) || { nombre: 'Mercado' };
+    const imagen = p.imagenUrl
+      ? '<img src="' + p.imagenUrl + '" alt="' + p.nombre + '">'
+      : '<span style="font-size:40px">' + (p.emoji || '📦') + '</span>';
+    return '<div class="tarjeta">' +
+      '<div class="tarjeta-imagen">' + imagen + '</div>' +
+      (p.oferta ? '<div class="badge-oferta">🏷️ ' + p.oferta + '</div>' : '') +
+      '<h3>' + p.nombre + '</h3>' +
+      '<div class="precio">$' + Number(p.precio).toLocaleString('es-CO') + '<span> / ' + p.unidad + '</span></div>' +
+      '<div class="mercado-link">📍 ' + m.nombre + '</div>' +
+      '<div class="fecha">Actualizado ' + tiempoRelativo(p.fecha) + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+document.getElementById('busqueda').addEventListener('keypress', e => {
+  if (e.key === 'Enter') buscar();
+});
+
+// ═══════════════════════════════════════════════════════════════════
+//  INICIO
+// ═══════════════════════════════════════════════════════════════════
+
+inicializarDatos();
+cargarMercadosFiltro();
+buscar();
+
+console.log('👤 Mercaderes de prueba:');
+console.log('  carlos@mercado.com / 123456');
+console.log('  maria@placita.com / 123456');
+</script>
+</body>
+</html>
